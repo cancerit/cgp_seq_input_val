@@ -1,5 +1,5 @@
 import os
-import xlrd,csv
+from importlib import import_module
 
 class Manifest(object):
     def __init__(self, infile):
@@ -13,6 +13,7 @@ class Manifest(object):
         self._excel_to_tsv(ofh)
 
     def _csv_to_tsv(self, ofh):
+        csv = import_module('csv')
         with open(self.infile, 'r') as csvfh:
             for row in csv.reader(csvfh, delimiter=','):
                 joined = "\t".join(row)
@@ -21,6 +22,7 @@ class Manifest(object):
         csvfh.closed
 
     def _excel_to_tsv(self, ofh):
+        xlrd = import_module('xlrd')
         book = xlrd.open_workbook(self.infile, formatting_info=False, on_demand=True, ragged_rows=True )
         sheet = book.sheet_by_name('For entry')
         for r in range(0,sheet.nrows):
