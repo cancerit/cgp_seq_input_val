@@ -101,13 +101,14 @@ class Header(object):
         self._all_items = header_items
         self.items = {}
 
-    def get_config(self):
+    def get_config(self, cfg_file=None):
         """
         Return the location of the config file to use in validation steps
         """
-        cfg_file = os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                            'config',
-                            '%s-%s.json' % (self.type, self.version))
+        if(cfg_file == None):
+            cfg_file = os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                                'config',
+                                '%s-%s.json' % (self.type, self.version))
         with open(cfg_file, 'r') as j:
             config = json.load(j)
 
