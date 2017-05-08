@@ -1,0 +1,36 @@
+{
+  "type": "NOTIMPORT",
+  "version": "1.0",
+  "header": {
+    "expected": [
+      "Our Ref:",
+      "Form type:",
+      "Form version:",
+      "Your Ref:",
+      "Species - Build:",
+      "Seq Protocol:",
+      "Data Type:",
+      "Mark Duplicates:"],
+    "required": [
+      "Your Ref:",
+      "Species - Build:",
+      "Seq Protocol:",
+      "Data Type:",
+      "Mark Duplicates:"],
+    "validate": {
+      "Species - Build:": [
+        "HUMAN - GRCh37d5",
+        "MOUSE - GRCm38"],
+      "Seq Protocol:": ["WGS","WXS","TGS"],
+      "Data Type:": ["DNA","RNA"],
+      "Mark Duplicates:": ["Y","N"]
+    }
+  },
+  "body": {
+    "required": ["Group_ID", "Sample", "Normal_Tissue", "Group_Control", "Library", "File", "File_2"],
+    "validate": {
+      "Normal_Tissue": ["Y","N"],
+      "Group_Control": ["Y","N"]
+    }
+  }
+}

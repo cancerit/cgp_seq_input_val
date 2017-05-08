@@ -1,0 +1,28 @@
+{
+  "type": "IMPORT",
+  "version": "1.0",
+  "header": {
+    "expected": [
+      "Our Ref:",
+      "Form type:",
+      "Form version:",
+      "Your Ref:",
+      "Species - Build:",
+      "Seq Protocol:",
+      "Data Type:",
+      "Mark Duplicates:"],
+    "required": [
+      "Your Ref:",
+      "Species - Build:",
+      "Seq Protocol:",
+      "Data Type:",
+      "Mark Duplicates:"]
+  },
+  "body": {
+    "required": ["Group_ID", "Sample", "Normal_Tissue", "Group_Control", "Library", "File", "File_2"],
+    "validate": {
+      "Normal_Tissue": ["Y","N"],
+      "Group_Control": ["Y","N"]
+    }
+  }
+}
