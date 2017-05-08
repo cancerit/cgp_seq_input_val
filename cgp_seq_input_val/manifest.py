@@ -1,14 +1,25 @@
-import os, json, re, sys, stat, shutil
+"""
+Functions and classes to support normalisation, reading and validation of
+manifests.
+"""
+import os
+import json
+import re
+import sys
+import stat
+import shutil
 from importlib import import_module
-
-from pprint import pprint
 
 from cgp_seq_input_val import constants
 
 def normalise(args):
+    """
+    Takes the arguments captured by the normalise_manifest.py executable
+    and converts all formats to tsv.
+    """
     # ALTERNATE SUCCESS PATHS in this block
     # Extensions are checked by argparse
-    if args.input.endswith('tsv') == True:
+    if args.input.endswith('tsv') is True:
         if args.output is None:
             print("\nINFO: input and output will be same file, no action required\n", file=sys.stderr)
             return True
@@ -25,16 +36,24 @@ def normalise(args):
             shutil.copyfile(args.input, args.output, follow_symlinks=True)
             return True
 
-    if ( args.input.endswith('tsv') == False and args.output is None ):
+    if args.input.endswith('tsv') is False and args.output is None:
         args.output = re.sub(r'\.[^.]+$', '.tsv', args.input)
 
     manifest = Manifest(args.input)
     manifest.convert_by_extn(args.output)
 
 class Manifest(object):
+    """
+    Top level object used to validate a manifest TSV file.
+    This runs validation of the header and body in turn rasing execptions as appropriate.
+    Configuration is handled via the json files found in the config sub directory.
+    """
     def __init__(self, infile):
         self.infile = infile
         self.informat = os.path.splitext(infile)[1][1:]
+        self.header = None
+        self.config = None
+
 
     def _xlsx_to_tsv(self, ofh):
         self._excel_to_tsv(ofh)
@@ -52,15 +71,16 @@ class Manifest(object):
 
     def _excel_to_tsv(self, ofh):
         xlrd = import_module('xlrd')
-        book = xlrd.open_workbook(self.infile, formatting_info=False, on_demand=True, ragged_rows=True )
+        book = xlrd.open_workbook(self.infile, formatting_info=False, on_demand=True, ragged_rows=True)
         sheet = book.sheet_by_name('For entry')
-        for r in range(0,sheet.nrows):
+        for r in range(0, sheet.nrows):
             simplerow = []
             cols = sheet.row_len(r)
             # do some cleanup
-            if (cols == 0 or sheet.cell_value(r,0) == ''): continue
-            for c in range(0,cols):
-                simplerow.append(str(sheet.cell_value(r,c)))
+            if cols == 0 or sheet.cell_value(r, 0) == '':
+                continue
+            for c in range(0, cols):
+                simplerow.append(str(sheet.cell_value(r, c)))
             print("\t".join(simplerow), file=ofh)
 
     def convert_by_extn(self, outfile):
@@ -73,15 +93,27 @@ class Manifest(object):
             convertor(ofh)
 
     def validate(self):
+        """
+        Runs the actual validation of a manifest:
+         - Create header object
+         - Load config
+         - Validate header
+         - Create body object
+         - Validate body
+        """
         if self.informat != 'tsv':
             raise ValueError('Manifest.validate only accepts files of type "tsv"')
         # Generate the header object
         self.header = Header(self.infile)
         self.config = self.header.get_config()
         self.header.validate(self.config['header'])
+        #TODO call body.validate()
 
 
 class Header(object):
+    """
+    Object to load and validate the header section of a manifest
+    """
     def __init__(self, manifest):
         self.manifest = manifest
         csv = import_module('csv')
@@ -91,7 +123,7 @@ class Header(object):
                 if row[0] == constants.HEADER_BODY_SWITCH:
                     break
                 val = ''
-                if(len(row) > 1):
+                if len(row) > 1:
                     val = row[1]
                 header_items[row[0]] = val
 
@@ -105,17 +137,19 @@ class Header(object):
         """
         Return the location of the config file to use in validation steps
         """
-        if(cfg_file == None):
+        if cfg_file is None:
             cfg_file = os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                                'config',
-                                '%s-%s.json' % (self.type, self.version))
+                                    'config',
+                                    '%s-%s.json' % (self.type, self.version))
         with open(cfg_file, 'r') as j:
             config = json.load(j)
 
         if config['type'] != self.type:
-            raise ParsingError("Filename (%s) does not match 'type' (%s) within file" % (cfg_file, config['type']))
+            raise ParsingError("Filename (%s) does not match 'type' (%s) within file"
+                               % (cfg_file, config['type']))
         if config['version'] != self.version:
-            raise ParsingError("Filename (%s) does not match 'version' (%s) within file" % (cfg_file, config['version']))
+            raise ParsingError("Filename (%s) does not match 'version' (%s) within file"
+                               % (cfg_file, config['version']))
 
         self.validate_json(config)
         return config
@@ -131,15 +165,20 @@ class Header(object):
           - body content validated by it's own class.
         """
         if 'header' not in config:
-            raise ConfigError("header (dict/hash) not found in json file: %s-%s.json" % (self.type, self.version))
+            raise ConfigError("header (dict/hash) not found in json file: %s-%s.json"
+                              % (self.type, self.version))
         if 'expected' not in config['header']:
-            raise ConfigError("header.expected (list/array) not found in json file: %s-%s.json" % (self.type, self.version))
+            raise ConfigError("header.expected (list/array) not found in json file: %s-%s.json"
+                              % (self.type, self.version))
         if 'required' not in config['header']:
-            raise ConfigError("header.required (list/array) not found in json file: %s-%s.json" % (self.type, self.version))
+            raise ConfigError("header.required (list/array) not found in json file: %s-%s.json"
+                              % (self.type, self.version))
         if 'validate' not in config['header']:
-            raise ConfigError("header.validate (dict/hash) not found in json file: %s-%s.json" % (self.type, self.version))
+            raise ConfigError("header.validate (dict/hash) not found in json file: %s-%s.json"
+                              % (self.type, self.version))
         if 'body' not in config:
-            raise ConfigError("body (dict/hash) not found in json file: %s-%s.json" % (self.type, self.version))
+            raise ConfigError("body (dict/hash) not found in json file: %s-%s.json"
+                              % (self.type, self.version))
 
     def fields_exist(self, expected):
         """
@@ -151,15 +190,18 @@ class Header(object):
         found = set(self._all_items.keys())
         expected_fields = set(expected)
         unexpected = found.difference(expected_fields)
-        if len(unexpected) > 0:
-            raise ValidationError("The following unexpected fields were found in the header of your file:\n\t'" + "'\n\t'".join(unexpected) + "'")
+        if unexpected: # empty sequences are false, don't use "len() > 0"
+            raise ValidationError("The following unexpected fields were found in the header of your file:\n\t'"
+                                  + "'\n\t'".join(unexpected) + "'")
         missing_fields = expected_fields.difference(found)
-        if len(missing_fields) > 0:
-            raise ValidationError("The following expected fields were missing from the header of your file:\n\t'" + "'\n\t'".join(missing_fields) + "'")
+        if missing_fields:
+            raise ValidationError("The following expected fields were missing from the header of your file:\n\t'"
+                                  + "'\n\t'".join(missing_fields) + "'")
         # add the elements to the approved header items dict
         for key, val in self._all_items.items():
-            if key in ('Form type:', 'Form version:'): continue
-            self.items[key]=val
+            if key in ('Form type:', 'Form version:'):
+                continue
+            self.items[key] = val
 
     def fields_have_values(self, required):
         """
@@ -167,8 +209,8 @@ class Header(object):
         These are detailed in the header.required element of the json file.
         """
         for item in required:
-            if len(self.items[item]) == 0:
-                raise ValidationError("Header item '%s' has no value." % (item) )
+            if not self.items[item]: # empty sequences are false, don't use "len() == 0"
+                raise ValidationError("Header item '%s' has no value." % (item))
 
     def field_values_valid(self, validate):
         """
@@ -176,20 +218,33 @@ class Header(object):
         """
         for item in validate:
             if self.items[item] not in validate[item]:
-                raise ValidationError("Header item '%s' has an invalid value of: %s" % (item,  self.items[item]) )
-
-
+                raise ValidationError("Header item '%s' has an invalid value of: %s" % (item, self.items[item]))
 
     def validate(self, rules):
+        """
+        Runs the different elements of header validation:
+         - fields_exist
+         - fields_have_values
+         - field_values_valid
+        """
         self.fields_exist(rules['expected'])
         self.fields_have_values(rules['required'])
         self.field_values_valid(rules['validate'])
 
 class ConfigError(RuntimeError):
+    """
+    Exception for errors in the values of config/*.json files.
+    """
     pass
 
 class ParsingError(RuntimeError):
+    """
+    Exception for errors in the naming of the config/*.json files.
+    """
     pass
 
 class ValidationError(RuntimeError):
+    """
+    Exception for failures to validate data in the manifest.
+    """
     pass
