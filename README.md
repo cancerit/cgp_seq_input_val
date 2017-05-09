@@ -1,4 +1,4 @@
-# cgp_seq_input_val_tests
+# cgp_seq_input_val
 
 This package is contains tools to validate manifests and validate various types
 of sequence data file commonly used for NGS data.
