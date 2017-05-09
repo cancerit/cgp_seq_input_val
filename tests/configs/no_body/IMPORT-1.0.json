@@ -1,0 +1,29 @@
+{
+  "type": "IMPORT",
+  "version": "1.0",
+  "header": {
+    "expected": [
+      "Our Ref:",
+      "Form type:",
+      "Form version:",
+      "Your Ref:",
+      "Species - Build:",
+      "Seq Protocol:",
+      "Data Type:",
+      "Mark Duplicates:"],
+    "required": [
+      "Your Ref:",
+      "Species - Build:",
+      "Seq Protocol:",
+      "Data Type:",
+      "Mark Duplicates:"],
+    "validate": {
+      "Species - Build:": [
+        "HUMAN - GRCh37d5",
+        "MOUSE - GRCm38"],
+      "Seq Protocol:": ["WGS","WXS","TGS"],
+      "Data Type:": ["DNA","RNA"],
+      "Mark Duplicates:": ["Y","N"]
+    }
+  }
+}

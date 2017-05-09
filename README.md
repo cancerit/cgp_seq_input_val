@@ -15,3 +15,25 @@ the driver code.
 ## Dependencies
 
 pip3 install xlrd
+
+
+# Development environment
+
+After clone cd into the project and run:
+
+```
+git config core.hooksPath git-hooks
+```
+
+## Dependencies
+
+* python3
+* nosetests-3+ (exported as `NOSETESTS3`)
+* coverage
+* pylint
+
+```
+pip3 install nosetests
+pip3 install coverage
+pip3 install pylint
+```

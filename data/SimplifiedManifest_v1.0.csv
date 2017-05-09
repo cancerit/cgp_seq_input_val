@@ -1,6 +1,12 @@
-,Response,,Our Ref:,,,
-Your Ref:,,,Form type:,IMPORT,,
-Species - Build:,,,Form version:,1.0,,
+,"This is the editable copy, only relevant cells can be modified: - Mouse over headings to see a description - Some fields use restricted values and will error if incorrect values entered (or drop-down not used) - Most drop-down lists have extended information in the 'ListData' worksheet. - See the 'Example' worksheet for examples. - Maximum of 100 files can be submitted in a manifest.",,,,,
+,,,,,,
+Our Ref:,,,,,,
+Form type:,IMPORT,,,,,
+Form version:,1.0,,,,,
+,,,,,,
+,Response,,,,,
+Your Ref:,,,,,,
+Species - Build:,,,,,,
 Seq Protocol:,,,,,,
 Data Type:,,,,,,
 Mark Duplicates:,Y,,,,,

@@ -1,0 +1,11 @@
+{
+  "type": "IMPORT",
+  "version": "1.0",
+  "body": {
+    "required": ["Group_ID", "Sample", "Normal_Tissue", "Group_Control", "Library", "File", "File_2"],
+    "validate": {
+      "Normal_Tissue": ["Y","N"],
+      "Group_Control": ["Y","N"]
+    }
+  }
+}

@@ -1,0 +1,9 @@
+Our Ref:
+Form type:	IMPORT
+Form version:	1.0
+Your Ref:	Wibble
+Seq Protocol:	WGS
+Data Type:	DNA
+Mark Duplicates:	Y
+Group_ID	Sample	Normal_Tissue	Group_Control	Library	File	File_2
+1	Bob	N	N	1	wibble.bam
