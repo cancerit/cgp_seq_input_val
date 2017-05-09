@@ -27,10 +27,15 @@
     }
   },
   "body": {
-    "required": ["Group_ID", "Sample", "Normal_Tissue", "Group_Control", "Library", "File", "File_2"],
+    "ordered": ["Group_ID", "Sample", "Normal_Tissue", "Group_Control", "Library", "File", "File_2"],
+    "required": ["Group_ID", "Sample", "Normal_Tissue", "Group_Control", "File"],
     "validate": {
       "Normal_Tissue": ["Y","N"],
       "Group_Control": ["Y","N"]
+    },
+    "validate_ext": {
+      "File": [".fastq", ".fastq.gz", ".fq", ".fq.gz", ".bam", ".cram"],
+      "File_2": [".fastq", ".fastq.gz", ".fq", ".fq.gz", ".bam", ".cram"]
     }
   }
 }
