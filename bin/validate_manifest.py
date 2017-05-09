@@ -19,6 +19,8 @@ parser.add_argument('-i', '--input', dest='input', metavar='FILE',
 parser.add_argument('-o', '--output', dest='output', metavar='FILE',
                     help='Output manifest augmented with UUID ref', required=True,
                     type=lambda s: cliutil.extn_check(parser, ('tsv'), s))
+parser.add_argument('-c', '--checkfiles', dest='checkfiles', action='store_true',
+                    help='When present check file exist and are non-zero size')
 
 args = parser.parse_args()
 

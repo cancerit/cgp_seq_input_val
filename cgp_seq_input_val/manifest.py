@@ -6,11 +6,11 @@ import os
 import json
 import re
 import sys
-import stat
 import shutil
 from importlib import import_module
 
 from cgp_seq_input_val import constants
+from cgp_seq_input_val.file_meta import FileMeta
 
 def normalise(args):
     """
@@ -25,10 +25,7 @@ def normalise(args):
             return True
         else:
             if os.path.exists(args.output):
-                # test if in/out file are the same, inode is simpler to test than stingified paths
-                if_node = os.stat(args.input)[stat.ST_INO]
-                of_node = os.stat(args.output)[stat.ST_INO]
-                if if_node == of_node:
+                if os.path.samefile(args.input, args.output):
                     print("\nINFO: input and output point to the same file, no action required", file=sys.stderr)
                     return True
             # anything else is a copy
@@ -53,7 +50,7 @@ class Manifest(object):
         self.informat = os.path.splitext(infile)[1][1:]
         self.header = None
         self.config = None
-
+        self.body = None
 
     def _xlsx_to_tsv(self, ofh):
         self._excel_to_tsv(ofh)
@@ -92,7 +89,7 @@ class Manifest(object):
             convertor = getattr(self, '_' + self.informat + '_to_tsv')
             convertor(ofh)
 
-    def validate(self):
+    def validate(self, checkFiles=False):
         """
         Runs the actual validation of a manifest:
          - Create header object
@@ -107,8 +104,11 @@ class Manifest(object):
         self.header = Header(self.infile)
         self.config = self.header.get_config()
         self.header.validate(self.config['header'])
-        #TODO call body.validate()
-
+        # process body of document
+        self.body = Body(self.infile, self.config['body'])
+        self.body.validate(self.config['body'])
+        if checkFiles:
+            self.body.file_tests()
 
 class Header(object):
     """
@@ -217,6 +217,7 @@ class Header(object):
         Checks all restricted fields have valid values for this type+version.
         """
         for item in validate:
+            print(item)
             if self.items[item] not in validate[item]:
                 raise ValidationError("Header item '%s' has an invalid value of: %s" % (item, self.items[item]))
 
@@ -230,6 +231,130 @@ class Header(object):
         self.fields_exist(rules['expected'])
         self.fields_have_values(rules['required'])
         self.field_values_valid(rules['validate'])
+
+class Body(object):
+    """
+    Body object validates the individual records of a manifest.
+    Takes the body component of the config object loaded/checked
+    by header object.
+    """
+    def __init__(self, manifest, config):
+        self.manifest = manifest
+        self.offset = 1 # start at one as would need to increment for header line otherwise
+        manifest_dir = os.path.dirname(manifest)
+        csv = import_module('csv')
+        self.file_detail = []
+        loadRows = False
+        with open(self.manifest, 'r') as ifh:
+            for row in csv.reader(ifh, delimiter='\t'):
+                if row[0] == constants.HEADER_BODY_SWITCH:
+                    loadRows = True
+                    self.headings = row
+                    self.heading_check(config)
+                    continue
+                if not loadRows:
+                    self.offset += 1
+                    continue
+                self.file_detail.append(FileMeta(self.headings, row, manifest_dir))
+
+    def validate(self, rules):
+        """
+        Runs the different elements of body validation:
+         - validate fields with restriced dict
+         - validate file/file_2 do not overlap
+        """
+        self.fields_have_values(rules['required'])
+        self.field_values_valid(rules['validate'])
+        self.uniq_files()
+        self.file_ext_check(rules['validate_ext'])
+
+    def field_values_valid(self, validate):
+        """
+        Check fields with restriced dict are valid
+        Must run after self.fields_have_values()
+        """
+        for item in validate:
+            cnt = self.offset
+            for fd in self.file_detail:
+                cnt += 1
+                if fd.attributes[item] not in validate[item]:
+                    raise ValidationError("Metadata item '%s' has an invalid value of '%s' on line %d"
+                                          % (item, fd.attributes[item], cnt))
+
+    def fields_have_values(self, rules):
+        """
+        Check the fields listed as required are populated
+        """
+        cnt = self.offset
+        for fd in self.file_detail:
+            cnt += 1
+            for req in rules:
+                if (not fd.attributes[req]) or fd.attributes[req] == '.':
+                    raise ValidationError("Required metadata value absent for '%s' on line %d ('.' not acceptable)"
+                                          % (req, cnt))
+
+    def uniq_files(self):
+        """
+        Check all filenames are uniq within this manifest
+        """
+        cnt = self.offset
+        all_files = []
+        for fd in self.file_detail:
+            cnt += 1
+            for f_type in ('File', 'File_2'):
+                item = fd.attributes[f_type]
+                if item == '.':
+                    continue
+                if item in all_files:
+                    raise ValidationError("Metadata item '%s' has a duplicate value of '%s' on line %d"
+                                          % (f_type, item, cnt))
+                all_files.append(item)
+
+    def file_ext_check(self, rules):
+        """
+        Check all files have valid extentions
+        - see config/*.json
+        """
+        cnt = self.offset
+        for fd in self.file_detail:
+            cnt += 1
+            for f_type in ('File', 'File_2'):
+                item = fd.attributes[f_type]
+                if item == '.':
+                    continue
+                extra = ''
+                (base, ext) = os.path.splitext(item)
+                if ext == '.gz':
+                    extra = ext
+                    (base, ext) = os.path.splitext(base)
+                full_ext = ext + extra
+                if full_ext not in rules[f_type]:
+                    raise ValidationError("File extension of '%s' is not valid, '%s' on line %d"
+                                          % (full_ext, f_type, cnt))
+
+
+    def heading_check(self, config):
+        """
+        Simple check for correct, ordered headings for file rows.
+        Here to minimise complexity of init
+        """
+        if self.headings != config['ordered']:
+            raise ValidationError("Expected row headings of\n\t"
+                                  + ', '.join(config['ordered'])
+                                  + "\nbut got\n\t"
+                                  + ', '.join(self.headings))
+
+    def file_tests(self):
+        """
+        Test for file existance and content
+        """
+        cnt = self.offset
+        for fd in self.file_detail:
+            cnt += 1
+            fd.test_files(cnt)
+
+
+
 
 class ConfigError(RuntimeError):
     """
