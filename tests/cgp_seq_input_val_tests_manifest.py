@@ -34,6 +34,12 @@ def test_manifest_missing_required():
      manifest = Manifest(infile)
      manifest.validate()
 
+def test_manifest_write():
+    with tempfile.TemporaryDirectory() as tmpd:
+        manifest = Manifest(os.path.join(test_data, 'file_set_good', 'files_good.tsv'))
+        manifest.validate()
+        (tsv_file, json_file) = manifest.write(tmpd) # output new manifest in tsv and json.
+
 ### Config parsing tests
 
 @raises(ParsingError)

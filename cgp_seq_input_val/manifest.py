@@ -7,6 +7,7 @@ import json
 import re
 import sys
 import shutil
+import uuid
 from importlib import import_module
 
 from cgp_seq_input_val import constants
@@ -111,6 +112,22 @@ class Manifest(object):
         if checkFiles:
             self.body.file_tests()
 
+    def write(self, outdir):
+        """
+        Generate the new tsv file with added UUID info and
+        the json representation for use later.
+        """
+        tsv_file = os.path.join(outdir, self.header.items['Our Ref:'] + '.tsv')
+        for_json = {'header': None, 'body': None}
+        with open(tsv_file, 'w') as fp:
+            for_json['header'] = self.header.write(fp)
+            for_json['body'] = self.body.write(fp, self.config['body'])
+
+        js_file = re.sub(r'tsv$', 'json', tsv_file)
+        with open(js_file, 'w') as fp:
+            json.dump(for_json, fp, sort_keys=True, indent=4)
+        return tsv_file, js_file
+
 class Header(object):
     """
     Object to load and validate the header section of a manifest
@@ -133,6 +150,19 @@ class Header(object):
         self.version = header_items['Form version:']
         self._all_items = header_items
         self.items = {}
+
+    def write(self, fp):
+        """
+        Writes the header to a file-pointer in tsv and returns the values
+        needed in the json object.
+        """
+        for key, val in self.items.items():
+            print("%s\t%s" % (key, val), file=fp)
+
+        print("%s\t%s" % ('Form type:', self.type), file=fp)
+        print("%s\t%s" % ('Form version:', self.version), file=fp)
+
+        return self.items
 
     def get_config(self, cfg_file=None):
         """
@@ -218,7 +248,6 @@ class Header(object):
         Checks all restricted fields have valid values for this type+version.
         """
         for item in validate:
-            print(item)
             if self.items[item] not in validate[item]:
                 raise ValidationError("Header item '%s' has an invalid value of: %s" % (item, self.items[item]))
 
@@ -232,6 +261,10 @@ class Header(object):
         self.fields_exist(rules['expected'])
         self.fields_have_values(rules['required'])
         self.field_values_valid(rules['validate'])
+
+        if self.items['Our Ref:'] == '':
+            # add UUID unless it exists
+            self.items['Our Ref:'] = str(uuid.uuid4())
 
 class Body(object):
     """
@@ -257,6 +290,23 @@ class Body(object):
                     self.offset += 1
                     continue
                 self.file_detail.append(FileMeta(self.headings, row, manifest_dir))
+
+    def write(self, fp, config):
+        """
+        Writes the body to a file-pointer in tsv and returns the values
+        needed in the json object.
+        """
+        for_json = []
+        ordered = config['ordered']
+        print("\t".join(ordered), file=fp)
+        for fd in self.file_detail:
+            row = []
+            for_json.append(fd.attributes)
+            for col in ordered:
+                row.append(fd.attributes[col])
+            print("\t".join(row), file=fp)
+        return for_json
+
 
     def validate(self, rules):
         """
