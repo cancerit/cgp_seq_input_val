@@ -10,6 +10,7 @@ import shutil
 from importlib import import_module
 
 from cgp_seq_input_val import constants
+from cgp_seq_input_val.error_classes import ConfigError, ParsingError, ValidationError
 from cgp_seq_input_val.file_meta import FileMeta
 
 def normalise(args):
@@ -318,6 +319,7 @@ class Body(object):
         cnt = self.offset
         for fd in self.file_detail:
             cnt += 1
+            last_ext = None
             for f_type in ('File', 'File_2'):
                 item = fd.attributes[f_type]
                 if item == '.':
@@ -328,9 +330,15 @@ class Body(object):
                     extra = ext
                     (base, ext) = os.path.splitext(base)
                 full_ext = ext + extra
+
                 if full_ext not in rules[f_type]:
                     raise ValidationError("File extension of '%s' is not valid, '%s' on line %d"
                                           % (full_ext, f_type, cnt))
+
+                if last_ext is not None and last_ext != full_ext:
+                    raise ValidationError("File extensions for same row must match, '%s' vs '%s' on line %d"
+                                          % (last_ext, full_ext, cnt))
+                last_ext = full_ext
 
 
     def heading_check(self, config):
@@ -352,24 +360,3 @@ class Body(object):
         for fd in self.file_detail:
             cnt += 1
             fd.test_files(cnt)
-
-
-
-
-class ConfigError(RuntimeError):
-    """
-    Exception for errors in the values of config/*.json files.
-    """
-    pass
-
-class ParsingError(RuntimeError):
-    """
-    Exception for errors in the naming of the config/*.json files.
-    """
-    pass
-
-class ValidationError(RuntimeError):
-    """
-    Exception for failures to validate data in the manifest.
-    """
-    pass
