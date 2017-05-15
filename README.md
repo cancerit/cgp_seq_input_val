@@ -61,25 +61,21 @@ current need to parse BAM/CRAM files to check quality encoding directly as the s
 technically disallows it.  It is possible for BAM files to be incorrectly encoded though.
 
 
-# INSTALL
-
-## Package Dependancies
-
-* [progressbar2](http://progressbar-2.readthedocs.io/en/latest/)
-* [xlrd](https://github.com/python-excel/xlrd)
-
-```
-pip3 install progressbar2
-pip3 install xlrd
-```
-
-
 # Development environment
+This project uses git pre-commit hooks.  As these will execute on your system it is entirely up to you if you activate them.
 
-After clone cd into the project and run:
+If you want tests, coverage reports and lint-ing to automatically execute before a commit you can activate them by running:
 
 ```
 git config core.hooksPath git-hooks
+```
+
+Only a test failure will block a commit, lint-ing is not enforced (but please consider following the guidance).
+
+You can run the same checks manually without a commit by executing the following in the base of the clone:
+
+```bash
+./run_tests.py
 ```
 
 ## Development Dependencies
@@ -95,8 +91,6 @@ pip3 install coverage
 pip3 install pylint
 ```
 
-
-
 ## Cutting a release
 
 __Make sure the version is incremented in ./setup.py__
@@ -105,9 +99,29 @@ The release is handled by setuptools:
 
 ```bash
 $ ./setup.py bdist_egg
-#copy the egg to where you want to deploy it
-scp dist/cgp_seq_input_val-*-py3.6.egg user@host:~/.
+# this creates an egg which can be copied to a deployment location, e.g.
+scp dist/cgp_seq_input_val-0.1.0-py3.6.egg user@host:~/
+```
 
-# on remote host
-easy_install ~/cgp_seq_input_val-*-py3.6.egg
+# INSTALL
+
+Installation is via `easy_install`.  Simply execute with the path to the compiled 'egg':
+
+```bash
+easy_install bundles/cgp_seq_input_val-0.1.0-py3.6.egg
+```
+
+## Package Dependancies
+
+`easy_install` will install the relevant dependancies, listed here for convenience:
+
+* [progressbar2](http://progressbar-2.readthedocs.io/en/latest/)
+* [xlrd](https://github.com/python-excel/xlrd)
+
+
+For development purposes you would need to install them to your dev environment:
+
+```bash
+pip3 install progressbar2
+pip3 install xlrd
 ```
