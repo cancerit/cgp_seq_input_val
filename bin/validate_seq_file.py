@@ -8,6 +8,8 @@ otherwise expecting interleaved fastq.
 May be extended to cover BAM/CRAM at a later date.
 """
 
+import pkg_resources  # part of setuptools
+version = pkg_resources.require("cgp_seq_input_val")[0].version
 # python builtin
 import sys
 import argparse
@@ -17,6 +19,7 @@ from cgp_seq_input_val.seq_validator import SeqValidator
 from cgp_seq_input_val.seq_validator import SeqValidationError
 
 parser = argparse.ArgumentParser(description="""Validates up to 2 sequencing data files.""")
+parser.add_argument('-v', '--version', action='version', version='%(prog)s ' + version)
 parser.add_argument('-r', '--report', dest='report', type=argparse.FileType('w'), default='-',
                     help='Output json report', required=False)
 parser.add_argument('-i', '--input', dest='input', metavar='FILE', nargs='+',

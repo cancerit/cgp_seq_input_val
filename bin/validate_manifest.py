@@ -2,6 +2,8 @@
 
 """Validates the normalised TSV manifest files"""
 
+import pkg_resources  # part of setuptools
+version = pkg_resources.require("cgp_seq_input_val")[0].version
 # python builtin
 import sys
 import argparse
@@ -13,6 +15,7 @@ from cgp_seq_input_val.manifest import ValidationError
 
 ## read variables, auto help text
 parser = argparse.ArgumentParser(description='Validate a tsv import manifest file')
+parser.add_argument('-v', '--version', action='version', version='%(prog)s ' + version)
 parser.add_argument('-i', '--input', dest='input', metavar='FILE',
                     help='Input manifest in tsv formats', required=True,
                     type=lambda s: cliutil.extn_check(parser, ('tsv'), s, readable=True))
