@@ -31,6 +31,6 @@ try:
 except ValidationError as ve:
     print("ERROR: " + str(ve), file=sys.stderr)
     exit(1)
-except (OSError, IOError) as err:
-    print("ERROR: %s - %s" % (err.strerror, err.filename), file=sys.stderr)
-    exit(err.errno)
+#except (OSError, IOError) as err:
+#    print("ERROR: %s - %s" % (err.strerror, err.filename), file=sys.stderr)
+#    exit(err.errno)

@@ -4,3 +4,7 @@ __pycache__/
 *$py.class
 .coverage
 cover/
+/.eggs
+/build
+/dist
+/cgp_seq_input_val.egg-info

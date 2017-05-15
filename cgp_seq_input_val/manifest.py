@@ -9,6 +9,7 @@ import sys
 import shutil
 import uuid
 from importlib import import_module
+from pkg_resources import resource_string, resource_filename
 
 from cgp_seq_input_val import constants
 from cgp_seq_input_val.error_classes import ConfigError, ParsingError, ValidationError
@@ -168,12 +169,16 @@ class Header(object):
         """
         Return the location of the config file to use in validation steps
         """
+        config = None
         if cfg_file is None:
-            cfg_file = os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                                    'config',
-                                    '%s-%s.json' % (self.type, self.version))
-        with open(cfg_file, 'r') as j:
-            config = json.load(j)
+            resource = 'config/%s-%s.json' % (self.type, self.version)
+            stream = resource_string(__name__, resource)
+            config = json.loads(stream)
+            # for error messages
+            cfg_file = resource_filename(__name__, resource)
+        else:
+            with open(cfg_file, 'r') as j:
+                config = json.load(j)
 
         if config['type'] != self.type:
             raise ParsingError("Filename (%s) does not match 'type' (%s) within file"
