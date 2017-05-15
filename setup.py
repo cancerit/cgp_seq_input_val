@@ -12,7 +12,7 @@ config = {
     'version': '0.1.0',
     'python_requires': '>= 3.3',
     'setup_requires': ['nose>=1.0'],
-    'install_requires': ['progressbar2'],
+    'install_requires': ['progressbar2','xlrd'],
     'packages': ['cgp_seq_input_val'],
     'package_data': {'cgp_seq_input_val': ['config/*.json']},
     'scripts': ['bin/normalise_manifest.py', 'bin/validate_manifest.py', 'bin/validate_seq_file.py']
