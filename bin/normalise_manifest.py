@@ -2,13 +2,15 @@
 
 """Converts manifests from various types to TSV"""
 
-import pkg_resources  # part of setuptools
-version = pkg_resources.require("cgp_seq_input_val")[0].version
 # python builtin
 import argparse
+import pkg_resources  # part of setuptools
+
 # this project
 from cgp_seq_input_val import constants, cliutil
 from cgp_seq_input_val.manifest import normalise
+
+version = pkg_resources.require("cgp_seq_input_val")[0].version
 
 ## read variables, auto help text
 parser = argparse.ArgumentParser(description='Convert manifest files to common denominator (tsv)',
