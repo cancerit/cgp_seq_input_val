@@ -63,9 +63,15 @@ technically disallows it.  It is possible for BAM files to be incorrectly encode
 
 # INSTALL
 
-## Dependencies
+## Package Dependancies
 
+* [progressbar2](http://progressbar-2.readthedocs.io/en/latest/)
+* [xlrd](https://github.com/python-excel/xlrd)
+
+```
+pip3 install progressbar2
 pip3 install xlrd
+```
 
 
 # Development environment
@@ -76,7 +82,7 @@ After clone cd into the project and run:
 git config core.hooksPath git-hooks
 ```
 
-## Dependencies
+## Development Dependencies
 
 * python3
 * nosetests-3+ (exported as `NOSETESTS3`)
@@ -87,4 +93,21 @@ git config core.hooksPath git-hooks
 pip3 install nosetests
 pip3 install coverage
 pip3 install pylint
+```
+
+
+
+## Cutting a release
+
+__Make sure the version is incremented in ./setup.py__
+
+The release is handled by setuptools:
+
+```bash
+$ ./setup.py bdist_egg
+#copy the egg to where you want to deploy it
+scp dist/cgp_seq_input_val-*-py3.6.egg user@host:~/.
+
+# on remote host
+easy_install ~/cgp_seq_input_val-*-py3.6.egg
 ```
