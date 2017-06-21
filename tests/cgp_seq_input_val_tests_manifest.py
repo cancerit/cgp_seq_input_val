@@ -1,6 +1,6 @@
 from nose.tools import *
-import sys, os, tempfile, shutil
-from cgp_seq_input_val.manifest import Manifest, Header, ConfigError, ParsingError, ValidationError
+import sys, os, tempfile, shutil, json
+from cgp_seq_input_val.manifest import Manifest, Header, Body, ConfigError, ParsingError, ValidationError
 from argparse import Namespace
 
 data_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'data')
@@ -84,6 +84,28 @@ def test_manifest_json_no_validate():
     header = Header(os.path.join(test_data, 'good_manifest.tsv'))
     header.get_config(os.path.join(configs, 'no_validate', 'IMPORT-1.0.json'))
 
+@raises(ConfigError)
+def test_manifest_json_limit_no_limit_by():
+    # need a good file to setup and then test get_config with a bad config file
+    infile = os.path.join(test_data,
+                         'file_set_good',
+                         'files_good.tsv')
+    header = Header(infile)
+    cfg = header.get_config(os.path.join(configs, 'limit_no_limit_by', 'IMPORT-1.0.json'))
+    body = Body(infile, cfg['body'])
+    body.validate(cfg['body'])
+
+@raises(ConfigError)
+def test_manifest_json_limit_by_no_limit():
+    # need a good file to setup and then test get_config with a bad config file
+    infile = os.path.join(test_data,
+                         'file_set_good',
+                         'files_good.tsv')
+    header = Header(infile)
+    cfg = header.get_config(os.path.join(configs, 'limit_by_no_limit', 'IMPORT-1.0.json'))
+    body = Body(infile, cfg['body'])
+    body.validate(cfg['body'])
+
 ### Header tests
 
 @raises(ValidationError)
@@ -163,8 +185,20 @@ def test_manifest_paired_extn_mismatch():
     manifest = Manifest(infile)
     manifest.validate()
 
+@raises(ValidationError)
+def test_manifest_limit_exceeded():
+    # need a good file to setup and then test get_config with a bad config file
+    infile = os.path.join(test_data,
+                         'file_set_good',
+                         'files_good.tsv')
+    header = Header(infile)
+    cfg = header.get_config(os.path.join(configs, 'limit_to_exceed', 'IMPORT-1.0.json'))
+    body = Body(infile, cfg['body'])
+    body.validate(cfg['body'])
+
 def test_manifest_file_set_good():
     infile = os.path.join(test_data, 'file_set_good',
                          'files_good.tsv')
     manifest = Manifest(infile)
     manifest.validate(True)
+    as_json = json.dumps(manifest.for_json())

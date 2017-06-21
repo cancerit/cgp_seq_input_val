@@ -15,6 +15,9 @@ from cgp_seq_input_val import constants
 from cgp_seq_input_val.error_classes import ConfigError, ParsingError, ValidationError
 from cgp_seq_input_val.file_meta import FileMeta
 
+VAL_LIM_ERROR = "Only %d record(s) with a value of '%s' are allowed in column '%s' when rows grouped by '%s'"
+VAL_LIM_CONFIG_ERROR = "'limit' and 'limit_by' must both be defined when either is present, check body.validate."
+
 def normalise(args):
     """
     Takes the arguments captured by the normalise_manifest.py executable
@@ -41,6 +44,25 @@ def normalise(args):
 
     manifest = Manifest(args.input)
     manifest.convert_by_extn(args.output)
+
+def evaulate_value_limits(field, chk, limit_chks):
+    """
+    Handles validation of fields where presence of partiular value has a max occurence
+    within a grouping of rows
+    """
+    for val_limit in chk:
+        if 'limit' not in val_limit:
+            continue
+        lim_chk_lookup = field + '_' + val_limit['value']
+        if lim_chk_lookup not in limit_chks:
+            continue
+        for val, count in limit_chks[lim_chk_lookup].items():
+            print(val, count)
+            if count > val_limit['limit']:
+                raise ValidationError(VAL_LIM_ERROR % (val_limit['limit'],
+                                                       val_limit['value'],
+                                                       field,
+                                                       val_limit['limit_by']))
 
 class Manifest(object):
     """
@@ -113,13 +135,24 @@ class Manifest(object):
         if checkFiles:
             self.body.file_tests()
 
+    def for_json(self):
+        """
+        Return the json output only
+        """
+        return {'type': self.header.type,
+                'version': self.header.version,
+                'header': self.header.items,
+                'body': self.body.write(None, self.config['body'])}
+
     def write(self, outdir):
         """
         Generate the new tsv file with added UUID info and
         the json representation for use later.
         """
         tsv_file = os.path.join(outdir, self.header.items['Our Ref:'] + '.tsv')
-        for_json = {'header': None, 'body': None}
+        for_json = {'type': self.header.type,
+                    'version': self.header.version,
+                    'header': None, 'body': None}
         with open(tsv_file, 'w') as fp:
             for_json['header'] = self.header.write(fp)
             for_json['body'] = self.body.write(fp, self.config['body'])
@@ -303,20 +336,21 @@ class Body(object):
         """
         for_json = []
         ordered = config['ordered']
-        print("\t".join(ordered), file=fp)
+        if fp:
+            print("\t".join(ordered), file=fp)
         for fd in self.file_detail:
             row = []
             for_json.append(fd.attributes)
             for col in ordered:
                 row.append(fd.attributes[col])
-            print("\t".join(row), file=fp)
+            if fp:
+                print("\t".join(row), file=fp)
         return for_json
-
 
     def validate(self, rules):
         """
         Runs the different elements of body validation:
-         - validate fields with restriced dict
+         - validate fields with restricted dict
          - validate file/file_2 do not overlap
         """
         self.fields_have_values(rules['required'])
@@ -328,14 +362,36 @@ class Body(object):
         """
         Check fields with restriced dict are valid
         Must run after self.fields_have_values()
+        If 'limit' and 'limit_by' are defined will create a counter for each of these entities
+        and error if 'limit' exceeded
         """
-        for item in validate:
+        for field, chk in validate.items():
             cnt = self.offset
+            limit_chks = {}
             for fd in self.file_detail:
                 cnt += 1
-                if fd.attributes[item] not in validate[item]:
+                # checks all values are valid
+                if fd.attributes[field] not in [d['value'] for d in chk]:
                     raise ValidationError("Metadata item '%s' has an invalid value of '%s' on line %d"
-                                          % (item, fd.attributes[item], cnt))
+                                          % (field, fd.attributes[field], cnt))
+                # Construct value occurence limiting counts
+                for val_limit in chk:
+                    if 'limit' in val_limit or 'limit_by' in val_limit:
+                        if 'limit' not in val_limit or 'limit_by' not in val_limit:
+                            raise ConfigError(VAL_LIM_CONFIG_ERROR+field)
+
+                        if fd.attributes[field] != val_limit['value']:
+                            continue
+
+                        lim_chk_lookup = field + '_' + val_limit['value']
+                        limit_by_value = fd.attributes[val_limit['limit_by']]
+                        if lim_chk_lookup not in limit_chks:
+                            limit_chks[lim_chk_lookup] = {}
+                        if limit_by_value not in limit_chks[lim_chk_lookup]:
+                            limit_chks[lim_chk_lookup][limit_by_value] = 0
+                        limit_chks[lim_chk_lookup][limit_by_value] += 1
+            evaulate_value_limits(field, chk, limit_chks)
+
 
     def fields_have_values(self, rules):
         """
