@@ -1,3 +1,4 @@
+"""General command line utility functions"""
 import os
 
 def extn_check(parser, choices, fname, readable=False):
@@ -7,12 +8,12 @@ def extn_check(parser, choices, fname, readable=False):
     readable -- When true attempt to open the file for reading
     """
     extn = os.path.splitext(fname)[1][1:]
-    if(readable == True):
+    if readable is True:
         try:
-            x = open(fname, 'r')
-            x.close()
-        except FileNotFoundError as e:
-            parser.error(e)
+            handle = open(fname, 'r')
+            handle.close()
+        except FileNotFoundError as error:
+            parser.error(error)
     if extn not in choices:
-       parser.error("File doesn't end with {}".format(choices))
+        parser.error("File doesn't end with {}".format(choices))
     return fname

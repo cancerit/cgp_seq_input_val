@@ -1,0 +1,43 @@
+{
+  "type": "IMPORT",
+  "version": "1.0",
+  "header": {
+    "expected": [
+      "Our Ref:",
+      "Form type:",
+      "Form version:",
+      "Your Ref:",
+      "Species - Build:",
+      "Seq Protocol:",
+      "Data Type:",
+      "Mark Duplicates:"],
+    "required": [
+      "Your Ref:",
+      "Species - Build:",
+      "Seq Protocol:",
+      "Data Type:",
+      "Mark Duplicates:"],
+    "validate": {
+      "Species - Build:": [
+        "HUMAN - GRCh37d5",
+        "MOUSE - GRCm38"],
+      "Seq Protocol:": ["WGS","WXS","TGS"],
+      "Data Type:": ["DNA","RNA"],
+      "Mark Duplicates:": ["Y","N"]
+    }
+  },
+  "body": {
+    "ordered": ["Group_ID", "Sample", "Normal_Tissue", "Group_Control", "Library", "File", "File_2"],
+    "required": ["Group_ID", "Sample", "Normal_Tissue", "Group_Control", "File"],
+    "validate": {
+      "Normal_Tissue": [{"value": "Y"},
+                        {"value": "N"}],
+      "Group_Control": [{"value": "Y", "limit_by": "Group_ID"},
+                        {"value": "N"}]
+    },
+    "validate_ext": {
+      "File": [".fastq", ".fastq.gz", ".fq", ".fq.gz", ".bam", ".cram"],
+      "File_2": [".fastq", ".fastq.gz", ".fq", ".fq.gz", ".bam", ".cram"]
+    }
+  }
+}
