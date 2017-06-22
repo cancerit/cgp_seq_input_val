@@ -32,7 +32,7 @@
     "validate": {
       "Normal_Tissue": [{"value": "Y"},
                         {"value": "N"}],
-      "Group_Control": [{"value": "Y", "limit": 1, "limit_by": "Group_ID"},
+      "Group_Control": [{"value": "Y", "limit": 1},
                         {"value": "N"}]
     },
     "validate_ext": {

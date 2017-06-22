@@ -33,7 +33,7 @@
       "Normal_Tissue": [{"value": "Y"},
                         {"value": "N"}],
       "Group_Control": [{"value": "Y", "limit": 1, "limit_by": "Group_ID"},
-                        {"value": "N"}]
+                        {"value": "N", "limit": 1, "limit_by": "Group_ID"}]
     },
     "validate_ext": {
       "File": [".fastq", ".fastq.gz", ".fq", ".fq.gz", ".bam", ".cram"],
