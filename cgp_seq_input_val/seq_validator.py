@@ -24,6 +24,7 @@ class SeqValidator(object):
         file_a - File to be validated (fastq[.gz])
         file_b - optional, second end of pair if paired fastq[.gz]
         progress_pairs - optional, how often to update progress bar [100,000]
+                       - set to 0 to disable
     """
     def __init__(self, file_a, file_b=None, progress_pairs=prog_records):
         self.progress_pairs = progress_pairs
@@ -130,7 +131,7 @@ class SeqValidator(object):
                 self.check_pair(read_1, read_2)
                 pairs += 1
 
-                if pairs % prog_indic == 0:
+                if bar and pairs % prog_indic == 0:
                     bar.update(pairs/prog_indic)
 
                 if curr_line_a == '':
@@ -182,7 +183,7 @@ class SeqValidator(object):
                 self.check_pair(read_1, read_2)
                 pairs += 1
 
-                if pairs % prog_indic == 0:
+                if bar and pairs % prog_indic == 0:
                     bar.update(pairs/prog_indic)
                 if curr_line == '':
                     break
@@ -225,6 +226,8 @@ class SeqValidator(object):
         """
         Sets up the progress indicator and indicate units
         """
+        if self.progress_pairs == 0:
+            return None
         bar = progressbar.ProgressBar(max_value=progressbar.UnknownLength)
         print("Progress is %d's of record pairs" % (self.progress_pairs), file=sys.stderr)
         bar.update(0)

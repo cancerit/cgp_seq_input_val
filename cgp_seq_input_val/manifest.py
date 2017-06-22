@@ -15,7 +15,7 @@ from cgp_seq_input_val import constants
 from cgp_seq_input_val.error_classes import ConfigError, ParsingError, ValidationError
 from cgp_seq_input_val.file_meta import FileMeta
 
-VAL_LIM_ERROR = "Only %d record(s) with a value of '%s' are allowed in column '%s' when rows grouped by '%s'"
+VAL_LIM_ERROR = "Only %d sample(s) with a value of '%s' is allowed in column '%s' when rows grouped by '%s'"
 VAL_LIM_CONFIG_ERROR = "'limit' and 'limit_by' must both be defined when either is present, check body.validate."
 
 def normalise(args):
@@ -56,9 +56,10 @@ def evaulate_value_limits(field, chk, limit_chks):
         lim_chk_lookup = field + '_' + val_limit['value']
         if lim_chk_lookup not in limit_chks:
             continue
-        for val, count in limit_chks[lim_chk_lookup].items():
-            print(val, count)
-            if count > val_limit['limit']:
+        # its the number of samples within the group with an attribute that is important
+        for val in limit_chks[lim_chk_lookup]:
+            sample_count = len(limit_chks[lim_chk_lookup][val].keys())
+            if sample_count > val_limit['limit']:
                 raise ValidationError(VAL_LIM_ERROR % (val_limit['limit'],
                                                        val_limit['value'],
                                                        field,
@@ -388,8 +389,10 @@ class Body(object):
                         if lim_chk_lookup not in limit_chks:
                             limit_chks[lim_chk_lookup] = {}
                         if limit_by_value not in limit_chks[lim_chk_lookup]:
-                            limit_chks[lim_chk_lookup][limit_by_value] = 0
-                        limit_chks[lim_chk_lookup][limit_by_value] += 1
+                            limit_chks[lim_chk_lookup][limit_by_value] = {}
+                        if fd.attributes['Sample'] not in limit_chks[lim_chk_lookup][limit_by_value]:
+                            limit_chks[lim_chk_lookup][limit_by_value][fd.attributes['Sample']] = 0
+                        limit_chks[lim_chk_lookup][limit_by_value][fd.attributes['Sample']] += 1
             evaulate_value_limits(field, chk, limit_chks)
 
 

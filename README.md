@@ -80,16 +80,23 @@ You can run the same checks manually without a commit by executing the following
 
 ## Development Dependencies
 
-* python3
-* nosetests-3+ (exported as `NOSETESTS3`)
-* coverage
-* pylint
+### Setup VirtualEnv:
 
 ```
-pip3 install nosetests
-pip3 install coverage
-pip3 install pylint
+cd $PROJECTROOT
+hash virtualenv || pip3 install virtualenv
+virtualenv -p python3 env
 ```
+
+For testing/coverage (`./run_tests.sh`)
+
+```
+env/bin/pip install nose
+env/bin/pip install coverage
+env/bin/pip install pylint
+```
+
+__Also see [Package Dependancies](#package-dependancies)__
 
 ## Cutting a release
 
@@ -122,6 +129,6 @@ easy_install bundles/cgp_seq_input_val-0.1.0-py3.6.egg
 For development purposes you would need to install them to your dev environment:
 
 ```bash
-pip3 install progressbar2
-pip3 install xlrd
+env/bin/pip install progressbar2
+env/bin/pip install xlrd
 ```
