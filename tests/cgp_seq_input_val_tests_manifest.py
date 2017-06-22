@@ -40,6 +40,30 @@ def test_manifest_write():
         manifest.validate()
         (tsv_file, json_file) = manifest.write(tmpd) # output new manifest in tsv and json.
 
+def test_manifest_uuid():
+    with tempfile.TemporaryDirectory() as tmpd:
+        manifest = Manifest(os.path.join(test_data, 'file_set_good', 'files_good.tsv'))
+        manifest.validate()
+        assert manifest.get_uuid()
+
+def test_manifest_existing_uuid():
+    with tempfile.TemporaryDirectory() as tmpd:
+        manifest = Manifest(os.path.join(test_data, 'with_uuid.tsv'))
+        manifest.validate()
+        assert manifest.get_uuid() == '05218fd0-79e5-4214-92d5-e133cd16a798'
+
+@raises(ValidationError)
+def test_manifest_existing_bad_uuid():
+    with tempfile.TemporaryDirectory() as tmpd:
+        manifest = Manifest(os.path.join(test_data, 'with_bad_uuid.tsv'))
+        manifest.validate()
+
+@raises(ValidationError)
+def test_manifest_uuid_novalidate():
+    with tempfile.TemporaryDirectory() as tmpd:
+        manifest = Manifest(os.path.join(test_data, 'file_set_good', 'files_good.tsv'))
+        assert manifest.get_uuid()
+
 ### Config parsing tests
 
 @raises(ParsingError)

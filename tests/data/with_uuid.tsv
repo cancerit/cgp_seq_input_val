@@ -1,0 +1,12 @@
+Our Ref:	05218fd0-79e5-4214-92d5-e133cd16a798
+Form type:	IMPORT
+Form version:	1.0
+Your Ref:	Wibble
+Species - Build:	HUMAN - GRCh37d5
+Seq Protocol:	WGS
+Data Type:	DNA
+Mark Duplicates:	Y
+Group_ID	Sample	Normal_Tissue	Group_Control	Library	File	File_2
+1	Bob	N	N	1	banana.fastq	gru.fastq
+1	Stuart	Y	N	1	bello.bam
+1	Kevin	Y	Y	1	read1.fq.gz	read2.fq.gz
