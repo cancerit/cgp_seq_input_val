@@ -18,6 +18,14 @@ from cgp_seq_input_val.file_meta import FileMeta
 VAL_LIM_ERROR = "Only %d sample(s) with a value of '%s' is allowed in column '%s' when rows grouped by '%s'"
 VAL_LIM_CONFIG_ERROR = "'limit' and 'limit_by' must both be defined when either is present, check body.validate."
 
+def uuid4_chk(uuid_str):
+    """Tests validity of uuid"""
+    try:
+        val = uuid.UUID(uuid_str, version=4)
+    except ValueError:
+        return False
+    return val.hex == uuid_str.replace('-', '')
+
 def normalise(args):
     """
     Takes the arguments captured by the normalise_manifest.py executable
@@ -115,6 +123,8 @@ class Manifest(object):
             convertor = getattr(self, '_' + self.informat + '_to_tsv')
             convertor(ofh)
 
+
+
     def validate(self, checkFiles=False):
         """
         Runs the actual validation of a manifest:
@@ -163,6 +173,12 @@ class Manifest(object):
             json.dump(for_json, fp, sort_keys=True, indent=4)
         return tsv_file, js_file
 
+    def get_uuid(self):
+        """Get the uuid for this manifest"""
+        if not self.header:
+            raise ValidationError('manifest.validate() must be called before manifest.get_uuid()')
+        return self.header.uuid
+
 class Header(object):
     """
     Object to load and validate the header section of a manifest
@@ -183,6 +199,7 @@ class Header(object):
         # now load the ini based on 'Form type:' and 'Form version:'
         self.type = header_items['Form type:']
         self.version = header_items['Form version:']
+        self.uuid = None
         self._all_items = header_items
         self.items = {}
 
@@ -206,11 +223,12 @@ class Header(object):
         config = None
         if cfg_file is None:
             resource = 'config/%s-%s.json' % (self.type, self.version)
-            stream = resource_string(__name__, resource)
-            config = json.loads(stream)
+            resource_as_string = resource_string(__name__, resource).decode("utf-8", "strict")
+            config = json.loads(resource_as_string)
             # for error messages
             cfg_file = resource_filename(__name__, resource)
         else:
+            print('direct from file', cfg_file, file=sys.stderr)
             with open(cfg_file, 'r') as j:
                 config = json.load(j)
 
@@ -303,7 +321,13 @@ class Header(object):
 
         if self.items['Our Ref:'] == '':
             # add UUID unless it exists
-            self.items['Our Ref:'] = str(uuid.uuid4())
+            self.uuid = str(uuid.uuid4())
+            self.items['Our Ref:'] = self.uuid
+        else:
+            uuid_found = self.items['Our Ref:']
+            if not uuid4_chk(uuid_found):
+                raise ValidationError("Value found at 'Our Ref' is not a valid uuid4: "+uuid_found)
+            self.uuid = uuid_found
 
 class Body(object):
     """
