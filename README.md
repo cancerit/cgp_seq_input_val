@@ -61,6 +61,22 @@ current need to parse BAM/CRAM files to check quality encoding directly as the s
 technically disallows it.  It is possible for BAM files to be incorrectly encoded though.
 
 
+# INSTALL
+
+Installation is via `easy_install`.  Simply execute with the path to the compiled 'egg':
+
+```bash
+easy_install bundles/cgp_seq_input_val-0.1.0-py3.6.egg
+```
+
+## Package Dependancies
+
+`easy_install` will install the relevant dependancies, listed here for convenience:
+
+* [progressbar2](http://progressbar-2.readthedocs.io/en/latest/)
+* [xlrd](https://github.com/python-excel/xlrd)
+
+
 # Development environment
 This project uses git pre-commit hooks.  As these will execute on your system it is entirely up to you if you activate them.
 
@@ -86,6 +102,8 @@ You can run the same checks manually without a commit by executing the following
 cd $PROJECTROOT
 hash virtualenv || pip3 install virtualenv
 virtualenv -p python3 env
+env/bin/pip install progressbar2
+env/bin/pip install xlrd
 ```
 
 For testing/coverage (`./run_tests.sh`)
@@ -108,27 +126,4 @@ The release is handled by setuptools:
 $ ./setup.py bdist_egg
 # this creates an egg which can be copied to a deployment location, e.g.
 scp dist/cgp_seq_input_val-0.1.0-py3.6.egg user@host:~/
-```
-
-# INSTALL
-
-Installation is via `easy_install`.  Simply execute with the path to the compiled 'egg':
-
-```bash
-easy_install bundles/cgp_seq_input_val-0.1.0-py3.6.egg
-```
-
-## Package Dependancies
-
-`easy_install` will install the relevant dependancies, listed here for convenience:
-
-* [progressbar2](http://progressbar-2.readthedocs.io/en/latest/)
-* [xlrd](https://github.com/python-excel/xlrd)
-
-
-For development purposes you would need to install them to your dev environment:
-
-```bash
-env/bin/pip install progressbar2
-env/bin/pip install xlrd
 ```
