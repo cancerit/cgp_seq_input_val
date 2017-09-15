@@ -223,11 +223,12 @@ class Header(object):
         config = None
         if cfg_file is None:
             resource = 'config/%s-%s.json' % (self.type, self.version)
-            stream = resource_string(__name__, resource)
-            config = json.loads(stream)
+            resource_as_string = resource_string(__name__, resource).decode("utf-8", "strict")
+            config = json.loads(resource_as_string)
             # for error messages
             cfg_file = resource_filename(__name__, resource)
         else:
+            print('direct from file', cfg_file, file=sys.stderr)
             with open(cfg_file, 'r') as j:
                 config = json.load(j)
 
