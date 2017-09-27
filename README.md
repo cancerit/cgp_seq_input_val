@@ -39,7 +39,8 @@ And a `json` version of the file ready for use by downstream systems.
 
 ### validate_seq_file.py
 
-Takes an interleaved or a pair of paired-fastq files and produces a simple report of:
+Takes an interleaved or a pair of paired-fastq files and produces a simple report
+of:
 
 ```
 {
@@ -53,50 +54,55 @@ Various exceptions can occur for malformed files.
 
 The primary purpose is to confirm Sanger/Illumina 1.8+ quality scores.
 
-#### Why no BAM/CRAM input?
+#### FASTQ not BAM/CRAM
 
 The flow of the service data will require splitting of any multi-lane BAM/CRAM files
 down to the individual lanes, which we would do to interleaved fastq.  There is no
 current need to parse BAM/CRAM files to check quality encoding directly as the spec
-technically disallows it.  It is possible for BAM files to be incorrectly encoded though.
+technically disallows it.  It is possible for BAM files to be incorrectly encoded
+though.
 
+## INSTALL
 
-# INSTALL
-
-Installation is via `easy_install`.  Simply execute with the path to the compiled 'egg':
+Installation is via `easy_install`.  Simply execute with the path to the compiled
+'egg':
 
 ```bash
 easy_install bundles/cgp_seq_input_val-0.1.0-py3.6.egg
 ```
 
-## Package Dependancies
+### Package Dependancies
 
 `easy_install` will install the relevant dependancies, listed here for convenience:
 
 * [progressbar2](http://progressbar-2.readthedocs.io/en/latest/)
 * [xlrd](https://github.com/python-excel/xlrd)
 
+## Development environment
 
-# Development environment
-This project uses git pre-commit hooks.  As these will execute on your system it is entirely up to you if you activate them.
+This project uses git pre-commit hooks.  As these will execute on your system it
+is entirely up to you if you activate them.
 
-If you want tests, coverage reports and lint-ing to automatically execute before a commit you can activate them by running:
+If you want tests, coverage reports and lint-ing to automatically execute before
+a commit you can activate them by running:
 
 ```
 git config core.hooksPath git-hooks
 ```
 
-Only a test failure will block a commit, lint-ing is not enforced (but please consider following the guidance).
+Only a test failure will block a commit, lint-ing is not enforced (but please consider
+following the guidance).
 
-You can run the same checks manually without a commit by executing the following in the base of the clone:
+You can run the same checks manually without a commit by executing the following
+in the base of the clone:
 
 ```bash
 ./run_tests.py
 ```
 
-## Development Dependencies
+### Development Dependencies
 
-### Setup VirtualEnv:
+#### Setup VirtualEnv
 
 ```
 cd $PROJECTROOT
@@ -114,11 +120,11 @@ env/bin/pip install coverage
 env/bin/pip install pylint
 ```
 
-__Also see [Package Dependancies](#package-dependancies)__
+__Also see__ [Package Dependancies](#package-dependancies)
 
-## Cutting a release
+### Cutting a release
 
-__Make sure the version is incremented in ./setup.py__
+__Make sure the version is incremented__ in `./setup.py`
 
 The release is handled by setuptools:
 

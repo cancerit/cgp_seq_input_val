@@ -35,7 +35,7 @@ try:
     validator = SeqValidator(args.input[0], file_2)
     validator.validate()
     validator.report(args.report)
-except SeqValidationError as ve: # runtime so no functions for message and errno
+except SeqValidationError as ve:  # runtime so no functions for message and errno
     print("ERROR: " + str(ve), file=sys.stderr)
     exit(1)
 # have to catch 2 classes works 3.0-3.3, above 3.3 all IO issues are captured under OSError
