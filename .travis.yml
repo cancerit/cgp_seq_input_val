@@ -24,6 +24,7 @@ before_script:
 
 script:
   - nosetests --with-coverage --cover-package=cgp_seq_input_val
+  - coverage xml
 
 after_script:
   - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
