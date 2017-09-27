@@ -2,7 +2,12 @@ notifications:
   slack: wtsi-cgpit:ptUMR1tkNyZJYd9TpGoss8WR
   email: false
 
+env:
+  global:
+    - CC_TEST_REPORTER_ID=24af7ff1e88f3b70c8b9a5280ce9604d561dacd8eaa7b1d895128ca2bd724beb
+
 language: python
+
 python:
   - "3.6"
 
@@ -11,5 +16,14 @@ install:
   - pip install progressbar2
   - pip install xlrd
 
+
+before_script:
+  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+  - chmod +x ./cc-test-reporter
+  - ./cc-test-reporter before-build
+
 script:
   - nosetests --with-coverage --cover-erase --cover-package=cgp_seq_input_val
+
+after_script:
+  - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
