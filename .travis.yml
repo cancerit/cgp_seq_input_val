@@ -23,7 +23,7 @@ before_script:
   - ./cc-test-reporter before-build
 
 script:
-  - nosetests --with-coverage --cover-erase --cover-package=cgp_seq_input_val
+  - nosetests --with-coverage --cover-package=cgp_seq_input_val
 
 after_script:
   - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
