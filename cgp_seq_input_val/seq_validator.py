@@ -189,7 +189,7 @@ class SeqValidator(object):
                     break
             self.pairs = pairs
         finally:
-            print(file=sys.stderr) # make sure we move to next line when progress finishes
+            print(file=sys.stderr)  # make sure we move to next line when progress finishes
             if fq_fh is not None and not fq_fh.closed:
                 fq_fh.close()
 
