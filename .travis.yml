@@ -7,9 +7,9 @@ python:
   - "3.6"
 
 install:
-  - pip install nose
+  - pip install nose coverage
   - pip install progressbar2
   - pip install xlrd
 
 script:
-  - nosetests
+  - nosetests --with-coverage --cover-erase --cover-package=cgp_seq_input_val
