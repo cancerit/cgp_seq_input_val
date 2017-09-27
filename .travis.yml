@@ -1,0 +1,15 @@
+notifications:
+  slack: wtsi-cgpit:ptUMR1tkNyZJYd9TpGoss8WR
+  email: false
+
+language: python
+python:
+  - "3.6"
+
+install:
+  - pip install nose
+  - pip install progressbar2
+  - pip install xlrd
+
+script:
+  - ./run_tests.sh
