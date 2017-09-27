@@ -12,7 +12,7 @@ from cgp_seq_input_val.manifest import normalise
 
 version = pkg_resources.require("cgp_seq_input_val")[0].version
 
-## read variables, auto help text
+# read variables, auto help text
 parser = argparse.ArgumentParser(description='Convert manifest files to common denominator (tsv)',
                                  epilog='Input can be [xls|xlsx|csv|tsv].  "tsv" is just copied to maintain tool-chain')
 parser.add_argument('-v', '--version', action='version', version='%(prog)s ' + version)

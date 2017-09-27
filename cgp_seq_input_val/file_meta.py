@@ -53,6 +53,7 @@ class FileMeta(object):
                 raise FileValidationError("'%s' is an empty file ('%s' - line %d)."
                                           % (item, f_type, line))
 
+
 class FileValidationError(RuntimeError):
     """
     Exception for failures to validate data in the manifest.

@@ -139,7 +139,6 @@ class Manifest(object):
             convertor = getattr(self, '_' + self.informat + '_to_tsv')
             convertor(ofh)
 
-
     def validate(self, checkFiles=False):
         """
         Runs the actual validation of a manifest:
@@ -288,7 +287,6 @@ class Header(object):
             raise ConfigError("body (dict/hash) not found in json file: \
                               %s-%s.json" % (self.type, self.version))
 
-
     def fields_exist(self, expected):
         """
         Checks all field that are expected to exist in the header of this
@@ -300,20 +298,19 @@ class Header(object):
         expected_fields = set(expected)
         unexpected = found.difference(expected_fields)
         if unexpected:
+            joined_vars = "'\n\t'".join(unexpected)
             raise ValidationError("The following unexpected fields were found \
-                                  in the header of your file:\n\t'"
-                                  + "'\n\t'".join(unexpected) + "'")
+                                  in the header of your file:\n\t'" + joined_vars + "'")
         missing_fields = expected_fields.difference(found)
         if missing_fields:
+            joined_vars = "'\n\t'".join(missing_fields)
             raise ValidationError("The following expected fields were missing \
-                                  from the header of your file:\n\t'"
-                                  + "'\n\t'".join(missing_fields) + "'")
+                                  from the header of your file:\n\t'" + joined_vars + "'")
         # add the elements to the approved header items dict
         for key, val in self._all_items.items():
             if key in ('Form type:', 'Form version:'):
                 continue
             self.items[key] = val
-
 
     def fields_have_values(self, required):
         """
@@ -324,7 +321,6 @@ class Header(object):
             if not self.items[item]:
                 raise ValidationError("Header item '%s' has no value." % (item))
 
-
     def field_values_valid(self, validate):
         """
         Checks all restricted fields have valid values for this type+version.
@@ -333,7 +329,6 @@ class Header(object):
             if self.items[item] not in validate[item]:
                 raise ValidationError("Header item '%s' has an invalid value \
                                       of: %s" % (item, self.items[item]))
-
 
     def validate(self, rules):
         """
@@ -366,7 +361,7 @@ class Body(object):
     """
     def __init__(self, manifest, config):
         self.manifest = manifest
-        self.offset = 1 # start at one otherwise need to increment for header
+        self.offset = 1  # start at one otherwise need to increment for header
         manifest_dir = os.path.dirname(manifest)
         csv = import_module('csv')
         self.file_detail = []
@@ -384,7 +379,6 @@ class Body(object):
                 self.file_detail.append(FileMeta(self.headings,
                                                  row,
                                                  manifest_dir))
-
 
     def write(self, fp, config):
         """
@@ -404,7 +398,6 @@ class Body(object):
                 print("\t".join(row), file=fp)
         return for_json
 
-
     def validate(self, rules):
         """
         Runs the different elements of body validation:
@@ -415,7 +408,6 @@ class Body(object):
         self.field_values_valid(rules['validate'])
         self.uniq_files()
         self.file_ext_check(rules['validate_ext'])
-
 
     def field_values_valid(self, validate):
         """
@@ -454,7 +446,6 @@ class Body(object):
                         limit_chks[lim_chk_lookup][limit_by_value][fd.attributes['Sample']] += 1
             evaulate_value_limits(field, chk, limit_chks)
 
-
     def fields_have_values(self, rules):
         """
         Check the fields listed as required are populated
@@ -467,7 +458,6 @@ class Body(object):
                     raise ValidationError("Required metadata value absent for \
                                           '%s' on line %d ('.' not acceptable)"
                                           % (req, cnt))
-
 
     def uniq_files(self):
         """
@@ -486,7 +476,6 @@ class Body(object):
                                           value of '%s' on line %d"
                                           % (f_type, item, cnt))
                 all_files.append(item)
-
 
     def file_ext_check(self, rules):
         """
@@ -519,18 +508,16 @@ class Body(object):
                                           % (last_ext, full_ext, cnt))
                 last_ext = full_ext
 
-
     def heading_check(self, config):
         """
         Simple check for correct, ordered headings for file rows.
         Here to minimise complexity of init
         """
         if self.headings != config['ordered']:
-            raise ValidationError("Expected row headings of\n\t"
-                                  + ', '.join(config['ordered'])
-                                  + "\nbut got\n\t"
-                                  + ', '.join(self.headings))
-
+            raise ValidationError("Expected row headings of\n\t" +
+                                  ', '.join(config['ordered']) +
+                                  "\nbut got\n\t" +
+                                  ', '.join(self.headings))
 
     def file_tests(self):
         """

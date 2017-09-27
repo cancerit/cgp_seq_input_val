@@ -137,12 +137,12 @@ class SeqValidator(object):
                 if curr_line_a == '':
                     if curr_line_b != '':
                         raise SeqValidationError("Read 1 file finished before read 2")
-                    break # if we get here both files are finished
+                    break  # if we get here both files are finished
                 if curr_line_b == '':
                     raise SeqValidationError("Read 2 file finished before read 1")
             self.pairs = pairs
         finally:
-            print(file=sys.stderr) # make sure we move to next line when progress finishes
+            print(file=sys.stderr)  # make sure we move to next line when progress finishes
             if fq_fh_a is not None and not fq_fh_a.closed:
                 fq_fh_a.close()
             if fq_fh_b is not None and not fq_fh_b.closed:
@@ -212,8 +212,7 @@ class SeqValidator(object):
                                      \n\t%s (%s)\n\t%s (%s)"
                                      % (read_1.file_pos[0], read_2.file_pos[0],
                                         read_1.name, self.file_a,
-                                        read_2.name, self.file_b)
-                                    )
+                                        read_2.name, self.file_b))
         if read_1.end != '1':
             raise SeqValidationError("Fastq record at line %d of %s should be for first in pair, got '%s'"
                                      % (read_1.file_pos[0], self.file_a, read_1.end))

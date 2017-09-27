@@ -14,7 +14,7 @@ from cgp_seq_input_val.manifest import ValidationError
 
 version = pkg_resources.require("cgp_seq_input_val")[0].version
 
-## read variables, auto help text
+# read variables, auto help text
 parser = argparse.ArgumentParser(description='Validate a tsv import manifest file')
 parser.add_argument('-v', '--version', action='version', version='%(prog)s ' + version)
 parser.add_argument('-i', '--input', dest='input', metavar='FILE',
@@ -30,7 +30,8 @@ args = parser.parse_args()
 try:
     manifest = Manifest(args.input)
     manifest.validate()
-    (tsv_file, json_file) = manifest.write(args.output) # output new manifest in tsv and json.
+    # output new manifest in tsv and json.
+    (tsv_file, json_file) = manifest.write(args.output)
     print("Created files:\n\t%s\n\t%s" % (tsv_file, json_file))
 except ValidationError as ve:
     print("ERROR: " + str(ve), file=sys.stderr)
