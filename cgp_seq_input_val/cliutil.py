@@ -1,6 +1,7 @@
 """General command line utility functions"""
 import os
 
+
 def extn_check(parser, choices, fname, readable=False):
     """Checks file extensions fit expected sets
 

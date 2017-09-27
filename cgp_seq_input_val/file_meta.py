@@ -4,6 +4,7 @@ FileMeta object to handle file actions and conversion from tsv formats
 
 import os
 
+
 class FileMeta(object):
     """
     Oject to hold file metadata as a set of attributes with small set of
@@ -26,7 +27,8 @@ class FileMeta(object):
     def get_path(self, f_type):
         """
         Returns the path of a file after pre-pending with the 'rel_path'
-        All file entries in the manifest should be relative to the manifest itself.
+        All file entries in the manifest should be relative to the manifest
+        itself.
         """
         item = self.attributes[f_type]
         if item == '.':
@@ -45,9 +47,11 @@ class FileMeta(object):
                 continue
 
             if not os.path.isfile(full_path):
-                raise FileValidationError("'%s' is not a file ('%s' - line %d)." % (item, f_type, line))
+                raise FileValidationError("'%s' is not a file ('%s' - line %d)."
+                                          % (item, f_type, line))
             if not os.path.getsize(full_path):
-                raise FileValidationError("'%s' is an empty file ('%s' - line %d)." % (item, f_type, line))
+                raise FileValidationError("'%s' is an empty file ('%s' - line %d)."
+                                          % (item, f_type, line))
 
 class FileValidationError(RuntimeError):
     """

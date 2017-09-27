@@ -16,6 +16,7 @@ from cgp_seq_input_val.fastq_read import FastqRead
 
 prog_records = 100000
 
+
 class SeqValidator(object):
     """
     Validate sequence file, currently only does fastq (interleaved or paired)
@@ -32,7 +33,7 @@ class SeqValidator(object):
         self.file_b = file_b
         self.pairs = 0
         # will use this to decide on path
-        self.is_gzip = False # change open method for fastq
+        self.is_gzip = False  # change open method for fastq
         # sam is not supported
 
         # only the min value is actually needed to determine if scaling
@@ -62,7 +63,7 @@ class SeqValidator(object):
         full_ext = ext + full_ext
 
         if self.file_b is None:
-            self.file_b = self.file_a # use equality to indicate interleaved
+            self.file_b = self.file_a  # use equality to indicate interleaved
         elif not self.file_b.endswith(full_ext):
             raise SeqValidationError("Input files be of same type")
 
@@ -87,8 +88,7 @@ class SeqValidator(object):
         """
         report = {'pairs': self.pairs,
                   'valid_q': self.q_min == 33,
-                  'interleaved': self.file_a == self.file_b
-                 }
+                  'interleaved': self.file_a == self.file_b}
         json.dump(report, fp, sort_keys=True, indent=4)
 
     def validate_paired(self):
