@@ -12,4 +12,4 @@ install:
   - pip install xlrd
 
 script:
-  - ./run_tests.sh
+  - nosetests
