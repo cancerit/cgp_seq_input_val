@@ -3,8 +3,8 @@ engines:
     enabled: true
     config:
       languages:
-      - python
-        #mass_threshold: 30
+        python:
+          mass_threshold: 35
   fixme:
     enabled: true
   markdownlint:
