@@ -6,7 +6,17 @@ if [ "$code" != "0" ]; then
     exit $code
 fi
 
-echo -e "\n#################\n# Running pylint:\n"
+# these should not die:
+
+echo -e "\n###################################"
+echo      "# Running radon (code complexity) #"
+echo      "###################################"
+env/bin/radon cc -nc bin cgp_seq_input_val
+
+echo -e "\n##########################"
+echo      "# Running pylint (style) #"
+echo      "##########################"
 env/bin/pylint --output-format=colorized bin/*.py cgp_seq_input_val
-echo -e "#\n#################"
-exit 0 # don't die based on pylint
+
+
+exit 0 # don't die based on assements of code quality
