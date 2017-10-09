@@ -116,6 +116,7 @@ For testing/coverage (`./run_tests.sh`)
 
 ```
 env/bin/pip install nose
+env/bin/pip install radon
 env/bin/pip install coverage
 env/bin/pip install pylint
 ```
