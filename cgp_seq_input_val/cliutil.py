@@ -13,8 +13,14 @@ def extn_check(parser, choices, fname, readable=False):
         try:
             handle = open(fname, 'r')
             handle.close()
-        except FileNotFoundError as error:
+        except FileNotFoundError as error: # pragma: no cover
             parser.error(error)
-    if extn not in choices:
+    if extn not in choices: # pragma: no cover
         parser.error("File doesn't end with {}".format(choices))
     return fname
+
+"""
+Why 'pragma: no cover'
+to cover parser errors in test cases you have to add a fair amount of additional
+code, as we know that raising an error this way is robust consider this covered.
+"""
