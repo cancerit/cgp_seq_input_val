@@ -13,8 +13,10 @@ def extn_check(parser, choices, fname, readable=False):
         try:
             handle = open(fname, 'r')
             handle.close()
-        except FileNotFoundError as error:
+        except FileNotFoundError as error:  # pragma: no cover
+            # can't cover these easily
             parser.error(error)
-    if extn not in choices:
+    if extn not in choices:  # pragma: no cover
+        # can't cover these easily
         parser.error("File doesn't end with {}".format(choices))
     return fname

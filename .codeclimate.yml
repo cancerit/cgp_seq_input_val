@@ -3,8 +3,9 @@ engines:
     enabled: true
     config:
       languages:
-      - python
-        #mass_threshold: 30
+        python:
+          python_version: 3
+          mass_threshold: 50
   fixme:
     enabled: true
   markdownlint:
@@ -13,6 +14,8 @@ engines:
     enabled: true
   radon:
     enabled: true
+    config:
+      threshold: "C"
 
 ratings:
   paths:
@@ -23,3 +26,4 @@ exclude_paths:
   - "git-hooks/"
   - "data/"
   - "tests/"
+  - "pylintrc"
