@@ -17,18 +17,22 @@ def main():
     """
     Sets up the parser and handles triggereing of correct sub-command
     """
-    parser = argparse.ArgumentParser(prog='cgpSeqInputVal')
+    common_parser = argparse.ArgumentParser('parent', add_help=False)
+    common_parser.add_argument('-v', '--version',
+                               action='version',
+                               version='%(prog)s ' + version)
+
+    parser = argparse.ArgumentParser(prog='cgpSeqInputVal', parents=[common_parser])
+
     subparsers = parser.add_subparsers(help='sub-command help')
 
     # create the parser for the "man-norm" command
     parser_a = subparsers.\
         add_parser('man-norm',
+                   parents=[common_parser],
                    description='Convert manifest files to common denominator (tsv)',
                    epilog='Input can be [xls|xlsx|csv|tsv].  \
                    "tsv" is just copied to maintain tool-chain')
-    parser_a.add_argument('-v', '--version',
-                          action='version',
-                          version='%(prog)s ' + version)
     parser_a.add_argument('-i', '--input',
                           dest='input',
                           metavar='FILE',
@@ -48,10 +52,8 @@ def main():
 
     # create the parser for the "man-valid" command
     parser_b = subparsers.add_parser('man-valid',
+                                     parents=[common_parser],
                                      description='Validate a tsv import manifest file')
-    parser_b.add_argument('-v', '--version',
-                          action='version',
-                          version='%(prog)s ' + version)
     parser_b.add_argument('-i', '--input',
                           dest='input',
                           metavar='FILE',
@@ -74,10 +76,8 @@ def main():
 
     # create the parser for the "seq-valid" command
     parser_c = subparsers.add_parser('seq-valid',
+                                     parents=[common_parser],
                                      description='Validates up to 2 sequencing data files.')
-    parser_c.add_argument('-v', '--version',
-                          action='version',
-                          version='%(prog)s ' + version)
     parser_c.add_argument('-r', '--report',
                           dest='report',
                           type=argparse.FileType('w'),
