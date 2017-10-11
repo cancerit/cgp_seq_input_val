@@ -16,6 +16,7 @@ from cgp_seq_input_val.fastq_read import FastqRead
 
 prog_records = 100000
 
+
 def validate_seq_files(args):
     """
     Top level entry point for validating sequence files.
@@ -225,17 +226,20 @@ class SeqValidator(object):
                 self.q_min = q_min
 
         if read_1.name != read_2.name:
-            raise SeqValidationError("Fastq record name at line %d should be a match to paired file line %s:\
+            raise SeqValidationError("Fastq record name at line %d should be a \
+                                     match to paired file line %s:\
                                      \n\t%s (%s)\n\t%s (%s)"
                                      % (read_1.file_pos[0], read_2.file_pos[0],
                                         read_1.name, self.file_a,
                                         read_2.name, self.file_b))
         if read_1.end != '1':
-            raise SeqValidationError("Fastq record at line %d of %s should be for first in pair, got '%s'"
+            raise SeqValidationError("Fastq record at line %d of %s should be \
+                                     for first in pair, got '%s'"
                                      % (read_1.file_pos[0], self.file_a, read_1.end))
 
         if read_2.end != '2':
-            raise SeqValidationError("Fastq record at line %d of %s should be for second in pair, got '%s'"
+            raise SeqValidationError("Fastq record at line %d of %s should be \
+                                     for second in pair, got '%s'"
                                      % (read_2.file_pos[0], self.file_b, read_2.end))
 
     def setup_progress(self):

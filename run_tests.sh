@@ -6,9 +6,9 @@ set +e
 # these should not die:
 
 echo -e "\n##########################"
-echo      "# Running pylint (style) #"
+echo      "# Running pep8 (style)   #"
 echo      "##########################"
-pylint --output-format=colorized cgp_seq_input_val
+pep8 --format=pylint cgp_seq_input_val
 
 echo -e "\n#########################################"
 echo      "# Running radon (cyclomatic complexity) #"
@@ -18,6 +18,6 @@ radon cc -nc cgp_seq_input_val
 echo -e "\n#########################################"
 echo      "# Running radon (maintainability index) #"
 echo      "#########################################"
-radon mi -s -n B cgp_seq_input_val
+radon mi -s cgp_seq_input_val
 
 exit 0 # don't die based on assements of code quality

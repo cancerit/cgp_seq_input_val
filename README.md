@@ -122,7 +122,7 @@ For testing/coverage (`./run_tests.sh`)
 source env/bin/activate # if not already in env
 pip install pytest
 pip install pytest-cov
-pip install pylint
+pip install pep8
 pip install radon
 ```
 
