@@ -66,16 +66,15 @@ though.
 
 ## INSTALL
 
-Installation is via `easy_install`.  Simply execute with the path to the compiled
-'egg':
+Installation is via `pip`.  Simply execute with the path to the packaged distribution:
 
 ```bash
-easy_install bundles/cgp_seq_input_val-0.1.0-py3.6.egg
+pip install --find-links=~/wheels cgp_seq_input_val
 ```
 
 ### Package Dependancies
 
-`easy_install` will install the relevant dependancies, listed here for convenience:
+`pip` will install the relevant dependancies, listed here for convenience:
 
 * [progressbar2](http://progressbar-2.readthedocs.io/en/latest/)
 * [xlrd](https://github.com/python-excel/xlrd)
@@ -99,7 +98,7 @@ You can run the same checks manually without a commit by executing the following
 in the base of the clone:
 
 ```bash
-./run_tests.py
+./run_tests.psh
 ```
 
 ### Development Dependencies
