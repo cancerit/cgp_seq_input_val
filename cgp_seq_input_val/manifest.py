@@ -12,13 +12,29 @@ from importlib import import_module
 from pkg_resources import resource_string, resource_filename
 
 from cgp_seq_input_val import constants
-from cgp_seq_input_val.error_classes import ConfigError, ParsingError, ValidationError
+from cgp_seq_input_val.error_classes import (ConfigError,
+                                             ParsingError,
+                                             ValidationError)
 from cgp_seq_input_val.file_meta import FileMeta
 
 VAL_LIM_ERROR = "Only %d sample(s) with a value of '%s' is allowed in column \
                 '%s' when rows grouped by '%s'"
 VAL_LIM_CONFIG_ERROR = "'limit' and 'limit_by' must both be defined when either \
                        is present, check body.validate."
+
+
+def wrapped_validate(args):
+    """
+    Top level entry point for validating a manifest
+    """
+    try:
+        manifest = Manifest(args.input)
+        manifest.validate()
+        # output new manifest in tsv and json.
+        (tsv_file, json_file) = manifest.write(args.output)
+        print("Created files:\n\t%s\n\t%s" % (tsv_file, json_file))
+    except ValidationError as ve:
+        sys.exit("ERROR: " + str(ve))
 
 
 def uuid4_chk(uuid_str):
@@ -428,22 +444,30 @@ class Body(object):
                                           % (field, fd.attributes[field], cnt))
                 # Construct value occurence limiting counts
                 for val_limit in chk:
-                    if 'limit' in val_limit or 'limit_by' in val_limit:
-                        if 'limit' not in val_limit or 'limit_by' not in val_limit:
-                            raise ConfigError(VAL_LIM_CONFIG_ERROR+field)
+                    if 'limit' not in val_limit and 'limit_by' not in val_limit:
+                        # if in neither skip
+                        continue
 
-                        if fd.attributes[field] != val_limit['value']:
-                            continue
+                    if 'limit' not in val_limit or 'limit_by' not in val_limit:
+                        # must be found in both
+                        raise ConfigError(VAL_LIM_CONFIG_ERROR+field)
 
-                        lim_chk_lookup = field + '_' + val_limit['value']
-                        limit_by_value = fd.attributes[val_limit['limit_by']]
-                        if lim_chk_lookup not in limit_chks:
-                            limit_chks[lim_chk_lookup] = {}
-                        if limit_by_value not in limit_chks[lim_chk_lookup]:
-                            limit_chks[lim_chk_lookup][limit_by_value] = {}
-                        if fd.attributes['Sample'] not in limit_chks[lim_chk_lookup][limit_by_value]:
-                            limit_chks[lim_chk_lookup][limit_by_value][fd.attributes['Sample']] = 0
-                        limit_chks[lim_chk_lookup][limit_by_value][fd.attributes['Sample']] += 1
+                    if fd.attributes[field] != val_limit['value']:
+                        continue
+
+                    lim_chk_lookup = field + '_' + val_limit['value']
+                    limit_by_value = fd.attributes[val_limit['limit_by']]
+
+                    # handled things we've not seen yet
+                    if lim_chk_lookup not in limit_chks:
+                        limit_chks[lim_chk_lookup] = {}
+                    if limit_by_value not in limit_chks[lim_chk_lookup]:
+                        limit_chks[lim_chk_lookup][limit_by_value] = {}
+
+                    if fd.attributes['Sample'] not in limit_chks[lim_chk_lookup][limit_by_value]:
+                        limit_chks[lim_chk_lookup][limit_by_value][fd.attributes['Sample']] = 0
+                    limit_chks[lim_chk_lookup][limit_by_value][fd.attributes['Sample']] += 1
+
             evaulate_value_limits(field, chk, limit_chks)
 
     def fields_have_values(self, rules):

@@ -17,6 +17,24 @@ from cgp_seq_input_val.fastq_read import FastqRead
 prog_records = 100000
 
 
+def validate_seq_files(args):
+    """
+    Top level entry point for validating sequence files.
+    """
+    try:
+        file_2 = None
+        if len(args.input) == 2:
+            file_2 = args.input[1]
+        validator = SeqValidator(args.input[0], file_2)
+        validator.validate()
+        validator.report(args.report)
+    except SeqValidationError as ve:  # runtime so no functions for message and errno
+        sys.exit("ERROR: " + str(ve))
+    # have to catch 2 classes works 3.0-3.3, above 3.3 all IO issues are captured under OSError
+    except (OSError, IOError) as err:
+        sys.exit("ERROR (%d): %s - %s" % (err.errno, err.strerror, err.filename))
+
+
 class SeqValidator(object):
     """
     Validate sequence file, currently only does fastq (interleaved or paired)
@@ -208,17 +226,20 @@ class SeqValidator(object):
                 self.q_min = q_min
 
         if read_1.name != read_2.name:
-            raise SeqValidationError("Fastq record name at line %d should be a match to paired file line %s:\
+            raise SeqValidationError("Fastq record name at line %d should be a \
+                                     match to paired file line %s:\
                                      \n\t%s (%s)\n\t%s (%s)"
                                      % (read_1.file_pos[0], read_2.file_pos[0],
                                         read_1.name, self.file_a,
                                         read_2.name, self.file_b))
         if read_1.end != '1':
-            raise SeqValidationError("Fastq record at line %d of %s should be for first in pair, got '%s'"
+            raise SeqValidationError("Fastq record at line %d of %s should be \
+                                     for first in pair, got '%s'"
                                      % (read_1.file_pos[0], self.file_a, read_1.end))
 
         if read_2.end != '2':
-            raise SeqValidationError("Fastq record at line %d of %s should be for second in pair, got '%s'"
+            raise SeqValidationError("Fastq record at line %d of %s should be \
+                                     for second in pair, got '%s'"
                                      % (read_2.file_pos[0], self.file_b, read_2.end))
 
     def setup_progress(self):
