@@ -11,7 +11,9 @@ the driver code.
 
 ## Tools
 
-### normalise_manifest.py
+`cgpSeqInputVal` has multiple sub commands, listed with `cgpSeqInputVal --help`.
+
+### cgpSeqInputVal man-norm
 
 Takes input in multiple types and converts to tsv.  If intput is tsv just copied
 the file to the output location (to simplify usage in workflows).  Valid input types
@@ -24,7 +26,7 @@ include:
 
 Absolutely no validation is carried out here.
 
-### validate_manifest.py
+### cgpSeqInputVal man-valid
 
 Takes the `tsv` representation of a manifest and performs validation of the structure
 and data values.  The checks applied are managed by the `cgp_seq_input_val/config/*.json`
@@ -37,7 +39,7 @@ The output is a lightly modified version of the input, adding:
 
 And a `json` version of the file ready for use by downstream systems.
 
-### validate_seq_file.py
+### cgpSeqInputVal seq-valid
 
 Takes an interleaved or a pair of paired-fastq files and produces a simple report
 of:
@@ -108,17 +110,20 @@ in the base of the clone:
 cd $PROJECTROOT
 hash virtualenv || pip3 install virtualenv
 virtualenv -p python3 env
-env/bin/pip install progressbar2
-env/bin/pip install xlrd
+source env/bin/activate
+pip install progressbar2
+pip install xlrd
+python setup.py develop # so bin scripts can find module
 ```
 
 For testing/coverage (`./run_tests.sh`)
 
 ```
-env/bin/pip install nose
-env/bin/pip install radon
-env/bin/pip install coverage
-env/bin/pip install pylint
+source env/bin/activate # if not already in env
+pip install pytest
+pip install pytest-cov
+pip install pylint
+pip install radon
 ```
 
 __Also see__ [Package Dependancies](#package-dependancies)
@@ -127,10 +132,13 @@ __Also see__ [Package Dependancies](#package-dependancies)
 
 __Make sure the version is incremented__ in `./setup.py`
 
-The release is handled by setuptools:
+The release is handled by wheel:
 
 ```bash
-$ ./setup.py bdist_egg
-# this creates an egg which can be copied to a deployment location, e.g.
-scp dist/cgp_seq_input_val-0.1.0-py3.6.egg user@host:~/
+$ source env/bin/activate # if not already
+$ python setup.py bdist_wheel -d dist
+# this creates an wheel archive which can be copied to a deployment location, e.g.
+$ scp cgp_seq_input_val-1.1.0-py3-none-any.whl user@host:~/wheels
+# on host
+$ pip install --find-links=~/wheels cgp_seq_input_val
 ```

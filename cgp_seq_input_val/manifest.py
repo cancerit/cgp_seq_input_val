@@ -20,6 +20,18 @@ VAL_LIM_ERROR = "Only %d sample(s) with a value of '%s' is allowed in column \
 VAL_LIM_CONFIG_ERROR = "'limit' and 'limit_by' must both be defined when either \
                        is present, check body.validate."
 
+def wrapped_validate(args):
+    """
+    Top level entry point for validating a manifest
+    """
+    try:
+        manifest = Manifest(args.input)
+        manifest.validate()
+        # output new manifest in tsv and json.
+        (tsv_file, json_file) = manifest.write(args.output)
+        print("Created files:\n\t%s\n\t%s" % (tsv_file, json_file))
+    except ValidationError as ve:
+        sys.exit("ERROR: " + str(ve))
 
 def uuid4_chk(uuid_str):
     """Tests validity of uuid"""

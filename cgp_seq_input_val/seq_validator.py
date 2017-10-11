@@ -16,6 +16,25 @@ from cgp_seq_input_val.fastq_read import FastqRead
 
 prog_records = 100000
 
+def validate_seq_files(args):
+    """
+    Top level entry point for validating sequence files.
+    """
+    try:
+        file_2 = None
+        if len(args.input) == 2:
+            file_2 = args.input[1]
+        validator = SeqValidator(args.input[0], file_2)
+        validator.validate()
+        validator.report(args.report)
+    except SeqValidationError as ve:  # runtime so no functions for message and errno
+        print("ERROR: " + str(ve), file=sys.stderr)
+        exit(1)
+    # have to catch 2 classes works 3.0-3.3, above 3.3 all IO issues are captured under OSError
+    except (OSError, IOError) as err:
+        print("ERROR: %s - %s" % (err.strerror, err.filename), file=sys.stderr)
+        exit(err.errno)
+
 
 class SeqValidator(object):
     """
