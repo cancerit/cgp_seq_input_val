@@ -9,7 +9,7 @@ env:
 addons:
   apt:
     packages:
-      - python-logilab-common
+      - python-logilab-common # only for py3.3
 
 language: python
 
