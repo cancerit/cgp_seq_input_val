@@ -6,15 +6,10 @@ env:
   global:
     - CC_TEST_REPORTER_ID=24af7ff1e88f3b70c8b9a5280ce9604d561dacd8eaa7b1d895128ca2bd724beb
 
-addons:
-  apt:
-    packages:
-      - python-logilab-common # only for py3.3
-
 language: python
 
 python:
-  - "3.3"
+  - "3.4"
   - "3.6"
 
 install:
