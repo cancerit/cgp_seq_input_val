@@ -98,7 +98,7 @@ You can run the same checks manually without a commit by executing the following
 in the base of the clone:
 
 ```bash
-./run_tests.psh
+./run_tests.sh
 ```
 
 ### Development Dependencies
