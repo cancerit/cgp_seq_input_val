@@ -18,7 +18,6 @@ config = {
     'entry_points': {
         'console_scripts': ['cgpSeqInputVal=cgp_seq_input_val.command_line:main'],
     },
-    'metadata': {'license_file': 'LICENSE'},
 }
 
 setup(**config)

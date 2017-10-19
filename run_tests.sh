@@ -20,4 +20,9 @@ echo      "# Running radon (maintainability index) #"
 echo      "#########################################"
 radon mi -s cgp_seq_input_val
 
+echo -e "\n##############################"
+echo      "# Running mdl (markdownlint) #"
+echo      "##############################"
+mdl .
+
 exit 0 # don't die based on assements of code quality

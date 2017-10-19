@@ -123,9 +123,14 @@ pip install pytest
 pip install pytest-cov
 pip install pep8
 pip install radon
+gem install --user-install mdl
 ```
 
-__Also see__ [Package Dependancies](#package-dependancies)
+Test that `mdl` is available, if not add the following to your path variable:
+
+```
+export PATH=$HOME/.gem/ruby/X.X.X/bin:$PATH
+```
 
 ### Cutting a release
 
@@ -142,9 +147,8 @@ $ scp cgp_seq_input_val-1.1.0-py3-none-any.whl user@host:~/wheels
 $ pip install --find-links=~/wheels cgp_seq_input_val
 ```
 
+## LICENCE
 
-LICENCE
-========
 Copyright (c) 2017 Genome Research Ltd.
 
 Author: CancerIT <cgpit@sanger.ac.uk>
