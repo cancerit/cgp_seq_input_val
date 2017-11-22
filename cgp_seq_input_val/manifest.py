@@ -134,6 +134,9 @@ class Manifest(object):
                                   formatting_info=False,
                                   on_demand=True,
                                   ragged_rows=True)
+        if 'For entry' not in book.sheet_names():
+            raise ParsingError('xls[x] workbooks require the data sheet to be named "For entry"')
+
         sheet = book.sheet_by_name('For entry')
         for r in range(0, sheet.nrows):
             simplerow = []
