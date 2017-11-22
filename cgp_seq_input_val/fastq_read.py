@@ -6,10 +6,11 @@ import re
 
 from cgp_seq_input_val.error_classes import SeqValidationError
 
+
 class FastqRead(object):
     """
-    Models and validates a fastq read, calling print will produce a 4 line record
-    regardess of original format.
+    Models and validates a fastq read, calling print will produce a 4 line
+    record regardess of original format.
 
     Inputs:
         fp: open file pointer to get next read from
@@ -50,7 +51,7 @@ class FastqRead(object):
         self.seq = seq
         self.qual = qual
         self.file_pos = (line_no_in, line_no)
-        self.last_line = curr_line # as we need to pass this back
+        self.last_line = curr_line  # as we need to pass this back
         self.name = None
         self.end = None
 
@@ -69,8 +70,9 @@ class FastqRead(object):
         """
         match = re.match(r'@(\S+)/([12])', self.header)
         if match is None:
-            raise SeqValidationError("Sequence record header must begin with '@' \
-                                     one non-whitespace character and '/[12]', line %d of %s"
+            raise SeqValidationError("Sequence record header must begin with \
+                                     '@' one non-whitespace character and \
+                                     '/[12]', line %d of %s"
                                      % (self.file_pos[0], filename))
         groups = match.groups()
         self.name = groups[0]

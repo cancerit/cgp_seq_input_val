@@ -1,6 +1,7 @@
 """General command line utility functions"""
 import os
 
+
 def extn_check(parser, choices, fname, readable=False):
     """Checks file extensions fit expected sets
 
@@ -13,7 +14,9 @@ def extn_check(parser, choices, fname, readable=False):
             handle = open(fname, 'r')
             handle.close()
         except FileNotFoundError as error:
+            # can't cover these easily
             parser.error(error)
     if extn not in choices:
+        # can't cover these easily
         parser.error("File doesn't end with {}".format(choices))
     return fname

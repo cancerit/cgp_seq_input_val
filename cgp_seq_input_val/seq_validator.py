@@ -16,6 +16,25 @@ from cgp_seq_input_val.fastq_read import FastqRead
 
 prog_records = 100000
 
+
+def validate_seq_files(args):
+    """
+    Top level entry point for validating sequence files.
+    """
+    try:
+        file_2 = None
+        if len(args.input) == 2:
+            file_2 = args.input[1]
+        validator = SeqValidator(args.input[0], file_2)
+        validator.validate()
+        validator.report(args.report)
+    except SeqValidationError as ve:  # runtime so no functions for message and errno
+        sys.exit("ERROR: " + str(ve))
+    # have to catch 2 classes works 3.0-3.3, above 3.3 all IO issues are captured under OSError
+    except (OSError, IOError) as err:
+        sys.exit("ERROR (%d): %s - %s" % (err.errno, err.strerror, err.filename))
+
+
 class SeqValidator(object):
     """
     Validate sequence file, currently only does fastq (interleaved or paired)
@@ -32,7 +51,7 @@ class SeqValidator(object):
         self.file_b = file_b
         self.pairs = 0
         # will use this to decide on path
-        self.is_gzip = False # change open method for fastq
+        self.is_gzip = False  # change open method for fastq
         # sam is not supported
 
         # only the min value is actually needed to determine if scaling
@@ -62,7 +81,7 @@ class SeqValidator(object):
         full_ext = ext + full_ext
 
         if self.file_b is None:
-            self.file_b = self.file_a # use equality to indicate interleaved
+            self.file_b = self.file_a  # use equality to indicate interleaved
         elif not self.file_b.endswith(full_ext):
             raise SeqValidationError("Input files be of same type")
 
@@ -87,8 +106,7 @@ class SeqValidator(object):
         """
         report = {'pairs': self.pairs,
                   'valid_q': self.q_min == 33,
-                  'interleaved': self.file_a == self.file_b
-                 }
+                  'interleaved': self.file_a == self.file_b}
         json.dump(report, fp, sort_keys=True, indent=4)
 
     def validate_paired(self):
@@ -137,12 +155,12 @@ class SeqValidator(object):
                 if curr_line_a == '':
                     if curr_line_b != '':
                         raise SeqValidationError("Read 1 file finished before read 2")
-                    break # if we get here both files are finished
+                    break  # if we get here both files are finished
                 if curr_line_b == '':
                     raise SeqValidationError("Read 2 file finished before read 1")
             self.pairs = pairs
         finally:
-            print(file=sys.stderr) # make sure we move to next line when progress finishes
+            print(file=sys.stderr)  # make sure we move to next line when progress finishes
             if fq_fh_a is not None and not fq_fh_a.closed:
                 fq_fh_a.close()
             if fq_fh_b is not None and not fq_fh_b.closed:
@@ -189,7 +207,7 @@ class SeqValidator(object):
                     break
             self.pairs = pairs
         finally:
-            print(file=sys.stderr) # make sure we move to next line when progress finishes
+            print(file=sys.stderr)  # make sure we move to next line when progress finishes
             if fq_fh is not None and not fq_fh.closed:
                 fq_fh.close()
 
@@ -208,18 +226,20 @@ class SeqValidator(object):
                 self.q_min = q_min
 
         if read_1.name != read_2.name:
-            raise SeqValidationError("Fastq record name at line %d should be a match to paired file line %s:\
+            raise SeqValidationError("Fastq record name at line %d should be a \
+                                     match to paired file line %s:\
                                      \n\t%s (%s)\n\t%s (%s)"
                                      % (read_1.file_pos[0], read_2.file_pos[0],
                                         read_1.name, self.file_a,
-                                        read_2.name, self.file_b)
-                                    )
+                                        read_2.name, self.file_b))
         if read_1.end != '1':
-            raise SeqValidationError("Fastq record at line %d of %s should be for first in pair, got '%s'"
+            raise SeqValidationError("Fastq record at line %d of %s should be \
+                                     for first in pair, got '%s'"
                                      % (read_1.file_pos[0], self.file_a, read_1.end))
 
         if read_2.end != '2':
-            raise SeqValidationError("Fastq record at line %d of %s should be for second in pair, got '%s'"
+            raise SeqValidationError("Fastq record at line %d of %s should be \
+                                     for second in pair, got '%s'"
                                      % (read_2.file_pos[0], self.file_b, read_2.end))
 
     def setup_progress(self):

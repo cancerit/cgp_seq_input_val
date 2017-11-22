@@ -1,4 +1,3 @@
-from nose.tools import *
 import sys, os, tempfile, shutil
 from cgp_seq_input_val.manifest import normalise
 from argparse import Namespace
@@ -13,10 +12,10 @@ def setup_args(indir, intype, tmpd):
                      output=os.path.join(tmpd, '%s_to.tsv' % (intype)) )
 
 def setup():
-    print("SETUP!")
+    pass
 
 def teardown():
-    print("TEAR DOWN!")
+    pass
 
 def test_normalise_xls():
     with tempfile.TemporaryDirectory() as tmpd:
