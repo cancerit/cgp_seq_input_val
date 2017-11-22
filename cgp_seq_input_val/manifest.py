@@ -230,6 +230,10 @@ class Header(object):
                 header_items[row[0]] = val
 
         # now load the ini based on 'Form type:' and 'Form version:'
+        if 'Form type:' not in header_items:
+            raise ParsingError('"Form type:" not found in header')
+        if 'Form version:' not in header_items:
+            raise ParsingError('"Form version:" not found in header')
         self.type = header_items['Form type:']
         self.version = header_items['Form version:']
         self.uuid = None
