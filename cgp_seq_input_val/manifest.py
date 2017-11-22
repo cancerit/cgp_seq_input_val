@@ -134,6 +134,9 @@ class Manifest(object):
                                   formatting_info=False,
                                   on_demand=True,
                                   ragged_rows=True)
+        if 'For entry' not in book.sheet_names():
+            raise ParsingError('xls[x] workbooks require the data sheet to be named "For entry"')
+
         sheet = book.sheet_by_name('For entry')
         for r in range(0, sheet.nrows):
             simplerow = []
@@ -230,6 +233,10 @@ class Header(object):
                 header_items[row[0]] = val
 
         # now load the ini based on 'Form type:' and 'Form version:'
+        if 'Form type:' not in header_items:
+            raise ParsingError('"Form type:" not found in header')
+        if 'Form version:' not in header_items:
+            raise ParsingError('"Form version:" not found in header')
         self.type = header_items['Form type:']
         self.version = header_items['Form version:']
         self.uuid = None
