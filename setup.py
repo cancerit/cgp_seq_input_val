@@ -9,7 +9,7 @@ config = {
     'url': 'https://github.com/cancerit/cgp_seq_input_val',
     'download_url': '',
     'author_email': 'cgphelp@sanger.ac.uk',
-    'version': '1.2.0',
+    'version': '1.2.1',
     'python_requires': '>= 3.4',
     'setup_requires': ['pytest'],
     'install_requires': ['progressbar2', 'xlrd'],
