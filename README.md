@@ -66,16 +66,15 @@ though.
 
 ## INSTALL
 
-Installation is via `easy_install`.  Simply execute with the path to the compiled
-'egg':
+Installation is via `pip`.  Simply execute with the path to the packaged distribution:
 
 ```bash
-easy_install bundles/cgp_seq_input_val-0.1.0-py3.6.egg
+pip install --find-links=~/wheels cgp_seq_input_val
 ```
 
 ### Package Dependancies
 
-`easy_install` will install the relevant dependancies, listed here for convenience:
+`pip` will install the relevant dependancies, listed here for convenience:
 
 * [progressbar2](http://progressbar-2.readthedocs.io/en/latest/)
 * [xlrd](https://github.com/python-excel/xlrd)
@@ -99,7 +98,7 @@ You can run the same checks manually without a commit by executing the following
 in the base of the clone:
 
 ```bash
-./run_tests.py
+./run_tests.sh
 ```
 
 ### Development Dependencies
@@ -124,9 +123,14 @@ pip install pytest
 pip install pytest-cov
 pip install pep8
 pip install radon
+gem install --user-install mdl
 ```
 
-__Also see__ [Package Dependancies](#package-dependancies)
+Test that `mdl` is available, if not add the following to your path variable:
+
+```
+export PATH=$HOME/.gem/ruby/X.X.X/bin:$PATH
+```
 
 ### Cutting a release
 
@@ -142,3 +146,24 @@ $ scp cgp_seq_input_val-1.1.0-py3-none-any.whl user@host:~/wheels
 # on host
 $ pip install --find-links=~/wheels cgp_seq_input_val
 ```
+
+## LICENCE
+
+Copyright (c) 2017 Genome Research Ltd.
+
+Author: CancerIT <cgpit@sanger.ac.uk>
+
+This file is part of cgp_seq_input_val.
+
+cgp_seq_input_val is free software: you can redistribute it and/or modify it under
+the terms of the GNU Affero General Public License as published by the Free
+Software Foundation; either version 3 of the License, or (at your option) any
+later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more
+details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <http://www.gnu.org/licenses/>.

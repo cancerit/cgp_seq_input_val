@@ -9,13 +9,13 @@ env:
 language: python
 
 python:
+  - "3.4"
   - "3.6"
 
 install:
-  - pip install nose coverage
+  - pip install pytest pytest-cov
   - pip install progressbar2
   - pip install xlrd
-
 
 before_script:
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
@@ -23,8 +23,7 @@ before_script:
   - ./cc-test-reporter before-build
 
 script:
-  - nosetests --with-coverage --cover-package=cgp_seq_input_val
-  - coverage xml
+  - pytest --cov-branch --cov-report term --cov=cgp_seq_input_val
 
 after_script:
   - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
