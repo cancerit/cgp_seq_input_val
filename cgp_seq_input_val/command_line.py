@@ -88,8 +88,19 @@ def main():
                           dest='input',
                           metavar='FILE',
                           nargs='+',
-                          help='Input manifest in tsv formats',
+                          help='Input FASTQ (optionally gzip compressed)',
                           required=True)
+    parser_c.add_argument('-q', '--qc',
+                          dest='qc',
+                          type=int,
+                          default=100000,
+                          help='Assess phred quality scale using N pairs (0=all, slow)',
+                          required=False)
+    parser_c.add_argument('-o', '--output',
+                          dest='output',
+                          type=str,
+                          help='Output as interleaved FASTQ (ignored for interleaved input)',
+                          required=False)
     parser_c.set_defaults(func=validate_seq_files)
 
     args = parser.parse_args()
