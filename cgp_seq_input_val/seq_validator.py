@@ -121,8 +121,8 @@ class SeqValidator(object):
         Converts the ascii quality score range to something useful for debugging
         """
         for encoding in Q_RANGES:
-            if(Q_RANGES[encoding][0] <= self.q_min <= Q_RANGES[encoding][1]
-               and Q_RANGES[encoding][0] <= self.q_max <= Q_RANGES[encoding][1]):
+            if(Q_RANGES[encoding][0] <= self.q_min <= Q_RANGES[encoding][1] and
+               Q_RANGES[encoding][0] <= self.q_max <= Q_RANGES[encoding][1]):
                 self.encodings.append(encoding)
 
     def report(self, fp):
