@@ -12,7 +12,7 @@ config = {
     'version': '1.2.1',
     'python_requires': '>= 3.4',
     'setup_requires': ['pytest'],
-    'install_requires': ['progressbar2', 'xlrd'],
+    'install_requires': ['progressbar2', 'xlrd', 'xopen'],
     'packages': ['cgp_seq_input_val'],
     'package_data': {'cgp_seq_input_val': ['config/*.json']},
     'entry_points': {
