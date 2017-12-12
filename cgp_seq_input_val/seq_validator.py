@@ -4,7 +4,8 @@ FileMeta object to handle file actions and conversion from tsv formats
 
 import os
 import sys
-import gzip
+import gzip  # only used for reading
+from xopen import xopen  # only used for writing
 import json
 
 # progressbar2
@@ -14,18 +15,29 @@ import progressbar
 from cgp_seq_input_val.error_classes import SeqValidationError
 from cgp_seq_input_val.fastq_read import FastqRead
 
-prog_records = 100000
+# From: https://en.wikipedia.org/wiki/FASTQ_format#Encoding
+Q_RANGES = {'Sanger': [33, 73],
+            'Solexa': [59, 104],
+            'Illumina 1.3': [64, 104],
+            'Illumina 1.5': [67, 105],
+            'Illumina 1.8': [33, 74]}
+
+PROG_RECORDS = 100000
 
 
 def validate_seq_files(args):
     """
     Top level entry point for validating sequence files.
     """
+    out_fh = None
     try:
         file_2 = None
         if len(args.input) == 2:
             file_2 = args.input[1]
-        validator = SeqValidator(args.input[0], file_2)
+            if args.output:
+                out_fh = xopen(args.output, mode='wt')
+
+        validator = SeqValidator(args.input[0], args.qc, out_fh=out_fh, file_b=file_2)
         validator.validate()
         validator.report(args.report)
     except SeqValidationError as ve:  # runtime so no functions for message and errno
@@ -33,6 +45,9 @@ def validate_seq_files(args):
     # have to catch 2 classes works 3.0-3.3, above 3.3 all IO issues are captured under OSError
     except (OSError, IOError) as err:
         sys.exit("ERROR (%d): %s - %s" % (err.errno, err.strerror, err.filename))
+    finally:
+        if out_fh:
+            out_fh.close()
 
 
 class SeqValidator(object):
@@ -45,18 +60,20 @@ class SeqValidator(object):
         progress_pairs - optional, how often to update progress bar [100,000]
                        - set to 0 to disable
     """
-    def __init__(self, file_a, file_b=None, progress_pairs=prog_records):
+    def __init__(self, file_a, qc_reads, file_b=None, out_fh=None, progress_pairs=PROG_RECORDS):
         self.progress_pairs = progress_pairs
+        self.qc_reads = qc_reads
         self.file_a = file_a
         self.file_b = file_b
+        self.out_fh = out_fh
         self.pairs = 0
         # will use this to decide on path
         self.is_gzip = False  # change open method for fastq
         # sam is not supported
 
-        # only the min value is actually needed to determine if scaling
-        # is Sanger or Illumina 1.8+
         self.q_min = 1000
+        self.q_max = -1
+        self.encodings = []
         self._prep()
 
     def __str__(self):
@@ -65,6 +82,8 @@ class SeqValidator(object):
         ret.append('file_b: '+str(self.file_b))
         ret.append('is_gzip: '+str(self.is_gzip))
         ret.append('q_min: '+str(self.q_min))
+        ret.append('q_max: '+str(self.q_max))
+        ret.append('encodings: '+str(self.encodings))
         return '\n'.join(ret)
 
     def _prep(self):
@@ -97,6 +116,15 @@ class SeqValidator(object):
         else:
             self.validate_paired()
 
+    def possible_encoding(self):
+        """
+        Converts the ascii quality score range to something useful for debugging
+        """
+        for encoding in Q_RANGES:
+            if(Q_RANGES[encoding][0] <= self.q_min <= Q_RANGES[encoding][1] and
+               Q_RANGES[encoding][0] <= self.q_max <= Q_RANGES[encoding][1]):
+                self.encodings.append(encoding)
+
     def report(self, fp):
         """
         Prints json report to the provided file-pointer
@@ -104,9 +132,12 @@ class SeqValidator(object):
         Args:
             fp - file pointer
         """
+        self.possible_encoding()
         report = {'pairs': self.pairs,
-                  'valid_q': self.q_min == 33,
-                  'interleaved': self.file_a == self.file_b}
+                  'valid_q': self.q_min >= 33 and self.q_max <= 74,
+                  'interleaved': self.file_a == self.file_b,
+                  'possible_encoding': self.encodings,
+                  'quality_ascii_range': [self.q_min, self.q_max]}
         json.dump(report, fp, sort_keys=True, indent=4)
 
     def validate_paired(self):
@@ -146,7 +177,12 @@ class SeqValidator(object):
                 curr_line_b = read_2.last_line
                 fqh_line_b = read_2.file_pos[1]
 
-                self.check_pair(read_1, read_2)
+                self.check_pair(read_1, read_2, self.qc_reads == 0 or pairs < self.qc_reads)
+
+                if self.out_fh:
+                    print(read_1, file=self.out_fh)
+                    print(read_2, file=self.out_fh)
+
                 pairs += 1
 
                 if bar and pairs % prog_indic == 0:
@@ -198,11 +234,12 @@ class SeqValidator(object):
                 # ensure line increments based on the last line read
                 fqh_line = read_2.file_pos[1]
 
-                self.check_pair(read_1, read_2)
+                self.check_pair(read_1, read_2, self.qc_reads == 0 or pairs < self.qc_reads)
                 pairs += 1
 
                 if bar and pairs % prog_indic == 0:
                     bar.update(pairs/prog_indic)
+
                 if curr_line == '':
                     break
             self.pairs = pairs
@@ -211,19 +248,28 @@ class SeqValidator(object):
             if fq_fh is not None and not fq_fh.closed:
                 fq_fh.close()
 
-    def check_pair(self, read_1, read_2):
+    def qual_range(self, read):
+        """
+        Finds the min and max ascii values from each quality encoding
+        """
+        sorted_qual = list(map(ord, read.qual))
+        sorted_qual.sort()  # faster than sorted(list(...))
+        if self.q_min > sorted_qual[0]:
+            self.q_min = sorted_qual[0]
+
+        if self.q_max < sorted_qual[-1]:
+            self.q_max = sorted_qual[-1]
+
+    def check_pair(self, read_1, read_2, check_qual):
         """
         Compares a pair of reads
 
         Raises:
             SeqValidationError
         """
-        if self.q_min > 33:
-            # once a min of 33 is achieved it must be sanger/Illumina 1.8+
-            # may need occasional review.
-            q_min = min(map(ord, read_1.qual))
-            if self.q_min > q_min:
-                self.q_min = q_min
+        if check_qual:
+            self.qual_range(read_1)
+            self.qual_range(read_2)
 
         if read_1.name != read_2.name:
             raise SeqValidationError("Fastq record name at line %d should be a \

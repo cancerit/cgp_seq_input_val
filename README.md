@@ -48,13 +48,24 @@ of:
 {
     "interleaved": false,
     "pairs": 722079,
+    "possible_encoding": [
+        "Sanger",
+        "Illumina 1.8"
+    ],
+    "quality_ascii_range": [
+        37,
+        67
+    ],
     "valid_q": true
 }
 ```
 
+Optionally generates a new interleaved (gz) file when paired-fastq is the input.
+
 Various exceptions can occur for malformed files.
 
-The primary purpose is to confirm Sanger/Illumina 1.8+ quality scores.
+The primary purpose is to confirm Sanger/Illumina 1.8+ quality scores.  Further Information
+on Phred encoding can be found [here](https://en.wikipedia.org/wiki/FASTQ_format#Encoding).
 
 #### FASTQ not BAM/CRAM
 
@@ -70,6 +81,8 @@ Installation is via `pip`.  Simply execute with the path to the packaged distrib
 
 ```bash
 pip install --find-links=~/wheels cgp_seq_input_val
+# or
+pip install https://github.com/cancerit/cgp_seq_input_val/archive/master.tar.gz
 ```
 
 ### Package Dependancies
@@ -78,6 +91,7 @@ pip install --find-links=~/wheels cgp_seq_input_val
 
 * [progressbar2](http://progressbar-2.readthedocs.io/en/latest/)
 * [xlrd](https://github.com/python-excel/xlrd)
+* [xopen](https://github.com/marcelm/xopen)
 
 ## Development environment
 
@@ -110,19 +124,18 @@ cd $PROJECTROOT
 hash virtualenv || pip3 install virtualenv
 virtualenv -p python3 env
 source env/bin/activate
-pip install progressbar2
-pip install xlrd
+pip install -r requirements.txt
 python setup.py develop # so bin scripts can find module
+
+## If changed requirements please run:
+pip freeze | grep -v `echo ${PWD##*/}` > requirements.txt
 ```
 
 For testing/coverage (`./run_tests.sh`)
 
 ```
 source env/bin/activate # if not already in env
-pip install pytest
-pip install pytest-cov
-pip install pep8
-pip install radon
+pip install -r requirements.txt
 gem install --user-install mdl
 ```
 
