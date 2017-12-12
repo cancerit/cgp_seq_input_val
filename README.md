@@ -81,6 +81,8 @@ Installation is via `pip`.  Simply execute with the path to the packaged distrib
 
 ```bash
 pip install --find-links=~/wheels cgp_seq_input_val
+# or
+pip install https://github.com/cancerit/cgp_seq_input_val/archive/master.tar.gz
 ```
 
 ### Package Dependancies
@@ -133,10 +135,7 @@ For testing/coverage (`./run_tests.sh`)
 
 ```
 source env/bin/activate # if not already in env
-pip install pytest
-pip install pytest-cov
-pip install pep8
-pip install radon
+pip install -r requirements.txt
 gem install --user-install mdl
 ```
 
