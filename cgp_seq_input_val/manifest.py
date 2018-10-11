@@ -528,15 +528,18 @@ class Body(object):
                     (base, ext) = os.path.splitext(base)
                 full_ext = ext + extra
 
-                if full_ext not in rules[f_type]:
-                    raise ValidationError("File extension of '%s' is not valid, \
-                                          '%s' on line %d"
-                                          % (full_ext, f_type, cnt))
+                if full_ext.lower() not in rules[f_type]:
+                    valid_extn = ', '.join(rules[f_type])
+                    raise ValidationError(
+                        f"File extension of '{full_ext}' is not valid ({valid_extn}), " +
+                        f"'{f_type}' on line {cnt} of manifest."
+                    )
 
                 if last_ext is not None and last_ext != full_ext:
-                    raise ValidationError("File extensions for same row must \
-                                          match, '%s' vs '%s' on line %d"
-                                          % (last_ext, full_ext, cnt))
+                    raise ValidationError(
+                        "File extensions for same row must match," +
+                        f"'{last_ext}' vs '{full_ext}' on line {cnt} of manifest."
+                    )
                 last_ext = full_ext
 
     def heading_check(self, config):
