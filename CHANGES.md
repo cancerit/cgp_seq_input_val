@@ -1,11 +1,16 @@
 # CHANGES
 
+## 1.4.0
+
+* Correct base config for file types accepted.  File_2 should only accept `f(?:ast)q.gz` (upper/lower)
+* Only allow compresed fastq.
+
 ## 1.3.0
 
 * Fixes `valid_q` value of `seq-valid` json report.  Always returned false previously.
 * Correct command line help text for `seq-valid` input option.
-* Extends the `seq-valid` json report to include the ascii range detected and which types of
-phred score these align to.
+* Extends the `seq-valid` json report to include the ascii range detected and which types of phred
+  score these align to.
 * Additional command line options for `seq-valid`
   * `-o | --output` - Generates an interleaved gzip compressed fastq file when input is paired fastq
   * `-q | --qc` - Specify the number of pairs to be used when assessing the phred quality range
