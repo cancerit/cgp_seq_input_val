@@ -10,7 +10,7 @@ config = {
     'download_url': '',
     'author_email': 'cgphelp@sanger.ac.uk',
     'version': '1.3.0',
-    'python_requires': '>= 3.4',
+    'python_requires': '>= 3.6',
     'setup_requires': ['pytest'],
     'install_requires': ['progressbar2', 'xlrd', 'xopen'],
     'packages': ['cgp_seq_input_val'],
