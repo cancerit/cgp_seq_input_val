@@ -1,5 +1,9 @@
 # CHANGES
 
+## 1.4.1
+
+* `validator` now allows upper case in FastQ file name extensions
+
 ## 1.4.0
 
 * Correct base config for file types accepted.  File_2 should only accept `f(?:ast)q.gz` (upper/lower)
