@@ -10,3 +10,4 @@ htmlcov/
 /build
 /dist
 /cgp_seq_input_val.egg-info
+.vscode
