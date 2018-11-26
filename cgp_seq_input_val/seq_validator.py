@@ -94,7 +94,8 @@ class SeqValidator(object):
             full_ext = ext
             (base, ext) = os.path.splitext(base)
 
-        if ext not in ('.fastq', '.fq'):
+        if ext.lower() not in ('.fastq', '.fq'):
+            # This check should be consistent with FastQ file extension restrictions in manifest.py
             raise SeqValidationError("Input files must be fastq|fq[.gz]")
 
         full_ext = ext + full_ext
