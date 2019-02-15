@@ -5,6 +5,7 @@ FileMeta object to handle file actions and conversion from tsv formats
 import os
 import sys
 import gzip  # only used for reading
+import bz2  # only used for reading
 from xopen import xopen  # only used for writing
 import json
 
@@ -69,6 +70,7 @@ class SeqValidator(object):
         self.pairs = 0
         # will use this to decide on path
         self.is_gzip = False  # change open method for fastq
+        self.is_bz2 = False  # change open method for fastq
         # sam is not supported
 
         self.q_min = 1000
@@ -81,6 +83,7 @@ class SeqValidator(object):
         ret.append('file_a: '+self.file_a)
         ret.append('file_b: '+str(self.file_b))
         ret.append('is_gzip: '+str(self.is_gzip))
+        ret.append('is_bz2: '+str(self.is_bz2))
         ret.append('q_min: '+str(self.q_min))
         ret.append('q_max: '+str(self.q_max))
         ret.append('encodings: '+str(self.encodings))
@@ -91,6 +94,10 @@ class SeqValidator(object):
         (base, ext) = os.path.splitext(self.file_a)
         if ext == '.gz':
             self.is_gzip = True
+            full_ext = ext
+            (base, ext) = os.path.splitext(base)
+        elif ext == '.bz2':
+            self.is_bz2 = True
             full_ext = ext
             (base, ext) = os.path.splitext(base)
 
@@ -158,6 +165,9 @@ class SeqValidator(object):
             if self.is_gzip:
                 fq_fh_a = gzip.open(self.file_a, 'rt')
                 fq_fh_b = gzip.open(self.file_b, 'rt')
+            elif self.is_bz2:
+                fq_fh_a = bz2.open(self.file_a, 'rt')
+                fq_fh_b = bz2.open(self.file_b, 'rt')
             else:
                 fq_fh_a = open(self.file_a, 'r')
                 fq_fh_b = open(self.file_b, 'r')
@@ -216,6 +226,8 @@ class SeqValidator(object):
         try:
             if self.is_gzip:
                 fq_fh = gzip.open(self.file_a, 'rt')
+            elif self.is_bz2:
+                fq_fh = bz2.open(self.file_a, 'rt')
             else:
                 fq_fh = open(self.file_a, 'r')
 
