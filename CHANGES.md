@@ -1,5 +1,9 @@
 # CHANGES
 
+## 1.4.2
+
+* added function to process `bz2` compressed FastQ format.  
+
 ## 1.4.1
 
 * `validator` now allows upper case in FastQ file name extensions
