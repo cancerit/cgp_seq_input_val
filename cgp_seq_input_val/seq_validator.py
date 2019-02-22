@@ -179,13 +179,14 @@ class SeqValidator(object):
             fqh_line_a = 0
             fqh_line_b = 0
             bar = self.setup_progress()
+
+            self.fq_format = get_fq_format(fq_fh_a)
+
             while True:
                 read_1 = FastqRead(fq_fh_a, fqh_line_a, curr_line_a, self.fq_format)
                 read_1.validate(file_a)
                 curr_line_a = read_1.last_line
                 fqh_line_a = read_1.file_pos[1]
-                if self.fq_format is None:
-                    self.fq_format = read_1.format
 
                 read_2 = FastqRead(fq_fh_b, fqh_line_b, curr_line_b, self.fq_format)
                 read_2.validate(file_b)
@@ -239,12 +240,13 @@ class SeqValidator(object):
             fqh_line = 0
             bar = self.setup_progress()
             pairs = 0
+
+            self.fq_format = get_fq_format(fq_fh)
+
             while True:
                 read_1 = FastqRead(fq_fh, fqh_line, curr_line, self.fq_format)
                 read_1.validate(file_a)
                 curr_line = read_1.last_line
-                if self.fq_format is None:
-                    self.fq_format = read_1.format
 
                 read_2 = FastqRead(fq_fh, read_1.file_pos[1], curr_line, self.fq_format)
                 read_2.validate(file_a)
@@ -317,3 +319,10 @@ class SeqValidator(object):
         print("Progress is %d's of record pairs" % (self.progress_pairs), file=sys.stderr)
         bar.update(0)
         return bar
+
+
+def get_fq_format(fq_fh):
+    read = FastqRead(fq_fh, 0, None, None)
+    # reset pointer to the begaining
+    fq_fh.seek(0)
+    return read.format
