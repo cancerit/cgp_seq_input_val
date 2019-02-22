@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -e
-pytest --cov-branch --cov-report term --cov-report html --cov=cgp_seq_input_val --cov-fail-under=50
+pytest --cov-branch --cov-report term --cov-report html --cov=cgp_seq_input_val --cov-fail-under=89
 set +e
 
 # these should not die:
