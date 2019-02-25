@@ -6,8 +6,8 @@ import re
 from enum import Enum
 from cgp_seq_input_val.error_classes import SeqValidationError
 
-ILLUMINA_FASTQ_HEADER_PATTERN = r'^@(\S+)/([12])$'
-CASAVA_FASTQ_HEADER_PATTERN = r'^@(\S+)\s([12])(:\w+:\w+:\w+)$'
+ILLUMINA_FASTQ_HEADER_PATTERN = re.compile(r'^@(\S+)/([12])$')
+CASAVA_FASTQ_HEADER_PATTERN = re.compile(r'^@(\S+)\s([12])(:\w+:\w+:\w+)$')
 
 
 class FastqFormat(Enum):
@@ -39,9 +39,9 @@ class FastqRead(object):
             seq_header = curr_line
 
         if format is None:
-            if re.match(ILLUMINA_FASTQ_HEADER_PATTERN, seq_header) is not None:
+            if ILLUMINA_FASTQ_HEADER_PATTERN.match(seq_header) is not None:
                 format = FastqFormat.ILLUMINA
-            elif re.match(CASAVA_FASTQ_HEADER_PATTERN, seq_header) is not None:
+            elif CASAVA_FASTQ_HEADER_PATTERN.match(seq_header) is not None:
                 format = FastqFormat.CASAVA
             else:
                 raise SeqValidationError("Unsupported FastQ header format: %s"
@@ -95,10 +95,10 @@ class FastqRead(object):
         Raises:
             SeqValidationError - Generic errror with validation
         """
-        match = re.match(ILLUMINA_FASTQ_HEADER_PATTERN, self.seq_header)
+        match = ILLUMINA_FASTQ_HEADER_PATTERN.match(self.seq_header)
         if match is None:
-            raise SeqValidationError("Sequence record header must match pattern: %s, line %d of %s"
-                                     % (ILLUMINA_FASTQ_HEADER_PATTERN, self.file_pos[0], filename))
+            raise SeqValidationError("Sequence record header must match pattern: '%s', line %d of %s"
+                                     % (ILLUMINA_FASTQ_HEADER_PATTERN.pattern, self.file_pos[0], filename))
         groups = match.groups()
         self.name = groups[0]
         self.pair_member = groups[1]
@@ -117,10 +117,10 @@ class FastqRead(object):
         Raises:
             SeqValidationError - Generic errror with validation
         """
-        match = re.match(CASAVA_FASTQ_HEADER_PATTERN, self.seq_header)
+        match = CASAVA_FASTQ_HEADER_PATTERN.match(self.seq_header)
         if match is None:
             raise SeqValidationError("Sequence record header must match patten: %s, line %d of %s"
-                                     % (CASAVA_FASTQ_HEADER_PATTERN, self.file_pos[0], filename))
+                                     % (CASAVA_FASTQ_HEADER_PATTERN.pattern, self.file_pos[0], filename))
         groups = match.groups()
         self.name = groups[0] + ' ' + groups[2]
         self.pair_member = groups[1]
