@@ -94,9 +94,8 @@ class CasavaFastqRead(FastqRead):
         """
         match = CASAVA_FASTQ_HEADER_PATTERN.match(self.seq_header)
         if match is None:
-            raise SeqValidationError("Sequence record header must match patten: '%s', line %d of %s" % (
-                CASAVA_FASTQ_HEADER_PATTERN.pattern, self.file_pos[0], filename)
-            )
+            raise SeqValidationError("Sequence record header must match patten: '%s', line %d of %s"
+                                     % (CASAVA_FASTQ_HEADER_PATTERN.pattern, self.file_pos[0], filename))
         groups = match.groups()
         self.name = groups[0] + ' ' + groups[2]
         self.pair_member = groups[1]
@@ -120,9 +119,8 @@ class IlluminaFastqRead(FastqRead):
         """
         match = ILLUMINA_FASTQ_HEADER_PATTERN.match(self.seq_header)
         if match is None:
-            raise SeqValidationError("Sequence record header must match pattern: '%s', line %d of %s" % (
-                ILLUMINA_FASTQ_HEADER_PATTERN.pattern, self.file_pos[0], filename)
-            )
+            raise SeqValidationError("Sequence record header must match pattern: '%s', line %d of %s"
+                                     % (ILLUMINA_FASTQ_HEADER_PATTERN.pattern, self.file_pos[0], filename))
         groups = match.groups()
         self.name = groups[0]
         self.pair_member = groups[1]
