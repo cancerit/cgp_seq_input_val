@@ -1,8 +1,12 @@
 # CHANGES
 
+## NEXT
+
+* IMPORT 1.0 changed to merge Seq Protocol and Data Type
+
 ## 1.4.2
 
-* added function to process `bz2` compressed FastQ format.  
+* added function to process `bz2` compressed FastQ format.
 
 ## 1.4.1
 

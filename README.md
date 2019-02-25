@@ -44,7 +44,7 @@ And a `json` version of the file ready for use by downstream systems.
 Takes an interleaved or a pair of paired-fastq files and produces a simple report
 of:
 
-```
+```json
 {
     "interleaved": false,
     "pairs": 722079,
@@ -101,7 +101,7 @@ is entirely up to you if you activate them.
 If you want tests, coverage reports and lint-ing to automatically execute before
 a commit you can activate them by running:
 
-```
+```bash
 git config core.hooksPath git-hooks
 ```
 
@@ -119,7 +119,7 @@ in the base of the clone:
 
 #### Setup VirtualEnv
 
-```
+```bash
 cd $PROJECTROOT
 hash virtualenv || pip3 install virtualenv
 virtualenv -p python3 env
@@ -133,7 +133,7 @@ pip freeze | grep -v `echo ${PWD##*/}` > requirements.txt
 
 For testing/coverage (`./run_tests.sh`)
 
-```
+```bash
 source env/bin/activate # if not already in env
 pip install -r requirements.txt
 gem install --user-install mdl
@@ -141,7 +141,7 @@ gem install --user-install mdl
 
 Test that `mdl` is available, if not add the following to your path variable:
 
-```
+```bash
 export PATH=$HOME/.gem/ruby/X.X.X/bin:$PATH
 ```
 
