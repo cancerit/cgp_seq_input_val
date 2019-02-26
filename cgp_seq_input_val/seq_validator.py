@@ -14,7 +14,7 @@ import progressbar
 
 # this package:
 from cgp_seq_input_val.error_classes import SeqValidationError
-from cgp_seq_input_val.fastq_read import FastqRead
+from cgp_seq_input_val.fastq_read import FastqRead, FastqFormat, CasavaFastqRead, IlluminaFastqRead
 
 # From: https://en.wikipedia.org/wiki/FASTQ_format#Encoding
 Q_RANGES = {'Sanger': [33, 73],
@@ -76,6 +76,7 @@ class SeqValidator(object):
         self.q_min = 1000
         self.q_max = -1
         self.encodings = []
+        self.fq_format = None
         self._prep()
 
     def __str__(self):
@@ -145,7 +146,8 @@ class SeqValidator(object):
                   'valid_q': self.q_min >= 33 and self.q_max <= 74,
                   'interleaved': self.file_a == self.file_b,
                   'possible_encoding': self.encodings,
-                  'quality_ascii_range': [self.q_min, self.q_max]}
+                  'quality_ascii_range': [self.q_min, self.q_max],
+                  'format': self.fq_format.value}
         json.dump(report, fp, sort_keys=True, indent=4)
 
     def validate_paired(self):
@@ -177,13 +179,21 @@ class SeqValidator(object):
             fqh_line_a = 0
             fqh_line_b = 0
             bar = self.setup_progress()
+
+            self.fq_format = get_fq_format(fq_fh_a)
+            FqClass = None
+            if self.fq_format == FastqFormat.ILLUMINA:
+                FqClass = IlluminaFastqRead
+            else:
+                FqClass = CasavaFastqRead
+
             while True:
-                read_1 = FastqRead(fq_fh_a, fqh_line_a, curr_line_a)
+                read_1 = FqClass(fq_fh_a, fqh_line_a, curr_line_a)
                 read_1.validate(file_a)
                 curr_line_a = read_1.last_line
                 fqh_line_a = read_1.file_pos[1]
 
-                read_2 = FastqRead(fq_fh_b, fqh_line_b, curr_line_b)
+                read_2 = FqClass(fq_fh_b, fqh_line_b, curr_line_b)
                 read_2.validate(file_b)
                 curr_line_b = read_2.last_line
                 fqh_line_b = read_2.file_pos[1]
@@ -235,12 +245,20 @@ class SeqValidator(object):
             fqh_line = 0
             bar = self.setup_progress()
             pairs = 0
+
+            self.fq_format = get_fq_format(fq_fh)
+            FqClass = None
+            if self.fq_format == FastqFormat.ILLUMINA:
+                FqClass = IlluminaFastqRead
+            else:
+                FqClass = CasavaFastqRead
+
             while True:
-                read_1 = FastqRead(fq_fh, fqh_line, curr_line)
+                read_1 = FqClass(fq_fh, fqh_line, curr_line)
                 read_1.validate(file_a)
                 curr_line = read_1.last_line
 
-                read_2 = FastqRead(fq_fh, read_1.file_pos[1], curr_line)
+                read_2 = FqClass(fq_fh, read_1.file_pos[1], curr_line)
                 read_2.validate(file_a)
                 curr_line = read_2.last_line
 
@@ -291,15 +309,15 @@ class SeqValidator(object):
                                      % (read_1.file_pos[0], read_2.file_pos[0],
                                         read_1.name, self.file_a,
                                         read_2.name, self.file_b))
-        if read_1.end != '1':
+        if read_1.pair_member != '1':
             raise SeqValidationError("Fastq record at line %d of %s should be \
                                      for first in pair, got '%s'"
-                                     % (read_1.file_pos[0], self.file_a, read_1.end))
+                                     % (read_1.file_pos[0], self.file_a, read_1.pair_member))
 
-        if read_2.end != '2':
+        if read_2.pair_member != '2':
             raise SeqValidationError("Fastq record at line %d of %s should be \
                                      for second in pair, got '%s'"
-                                     % (read_2.file_pos[0], self.file_b, read_2.end))
+                                     % (read_2.file_pos[0], self.file_b, read_2.pair_member))
 
     def setup_progress(self):
         """
@@ -311,3 +329,9 @@ class SeqValidator(object):
         print("Progress is %d's of record pairs" % (self.progress_pairs), file=sys.stderr)
         bar.update(0)
         return bar
+
+
+def get_fq_format(file_h):
+    read = FastqRead(file_h, 0, None)
+    file_h.seek(0)  # reset file pointer to the begaining
+    return read.get_fq_format()

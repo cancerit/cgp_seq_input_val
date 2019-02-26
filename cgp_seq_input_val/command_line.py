@@ -88,7 +88,7 @@ def main():
                           dest='input',
                           metavar='FILE',
                           nargs='+',
-                          help='Input FASTQ (optionally gzip compressed)',
+                          help='Input FASTQ (optionally gzip/bz2 compressed)',
                           required=True)
     parser_c.add_argument('-q', '--qc',
                           dest='qc',
