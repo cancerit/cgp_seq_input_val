@@ -13,7 +13,7 @@ pycodestyle cgp_seq_input_val
 echo -e "\n#########################################"
 echo      "# Running radon (cyclomatic complexity) #"
 echo      "#########################################"
-radon cc -nd cgp_seq_input_val
+radon cc -nc cgp_seq_input_val
 
 echo -e "\n#########################################"
 echo      "# Running radon (maintainability index) #"
