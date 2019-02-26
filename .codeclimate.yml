@@ -19,7 +19,7 @@ engines:
   radon:
     enabled: true
     config:
-      threshold: "C"
+      threshold: "D"
 
 ratings:
   paths:
