@@ -75,7 +75,7 @@ class FastqRead(object):
             format = FastqFormat.CASAVA
         else:
             raise SeqValidationError("Unsupported FastQ header format: %s"
-                                        % self.seq_header)
+                                     % self.seq_header)
         return format
 
 
@@ -93,8 +93,9 @@ class CasavaFastqRead(FastqRead):
         """
         match = CASAVA_FASTQ_HEADER_PATTERN.match(self.seq_header)
         if match is None:
-            raise SeqValidationError("Sequence record header must match pattern: '%s', line %d of %s"
-                                     % (CASAVA_FASTQ_HEADER_PATTERN.pattern, self.file_pos[0], filename))
+            raise SeqValidationError(
+                "Sequence record header must match pattern: '%s', line %d of %s"
+                % (CASAVA_FASTQ_HEADER_PATTERN.pattern, self.file_pos[0], filename))
         groups = match.groups()
         self.name = groups[0] + ' ' + groups[2]
         self.pair_member = groups[1]
@@ -118,12 +119,13 @@ class IlluminaFastqRead(FastqRead):
         """
         match = ILLUMINA_FASTQ_HEADER_PATTERN.match(self.seq_header)
         if match is None:
-            raise SeqValidationError("Sequence record header must match pattern: '%s', line %d of %s"
-                                     % (ILLUMINA_FASTQ_HEADER_PATTERN.pattern, self.file_pos[0], filename))
+            raise SeqValidationError(
+                "Sequence record header must match pattern: '%s', line %d of %s"
+                % (ILLUMINA_FASTQ_HEADER_PATTERN.pattern, self.file_pos[0], filename))
         groups = match.groups()
         self.name = groups[0]
         self.pair_member = groups[1]
 
         if len(self.qual) != len(self.seq):
             raise SeqValidationError("Fastq record at line %d of %s appears to be corrupt"
-                                    % (self.file_pos[0], filename))
+                                     % (self.file_pos[0], filename))
