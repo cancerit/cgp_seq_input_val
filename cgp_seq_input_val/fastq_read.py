@@ -66,7 +66,6 @@ class FastqRead(object):
         self.pair_member = None
 
     def __str__(self):
-        # TODO needs to output casava 1.8 format headers
         return "%s\n%s\n%s\n%s" % (self.seq_header, self.seq, self.qual_header, self.qual)
 
     def get_fq_format(self):
@@ -94,7 +93,7 @@ class CasavaFastqRead(FastqRead):
         """
         match = CASAVA_FASTQ_HEADER_PATTERN.match(self.seq_header)
         if match is None:
-            raise SeqValidationError("Sequence record header must match patten: '%s', line %d of %s"
+            raise SeqValidationError("Sequence record header must match pattern: '%s', line %d of %s"
                                      % (CASAVA_FASTQ_HEADER_PATTERN.pattern, self.file_pos[0], filename))
         groups = match.groups()
         self.name = groups[0] + ' ' + groups[2]
