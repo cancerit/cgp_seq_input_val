@@ -1,8 +1,9 @@
 # CHANGES
 
-## NEXT
+## 1.5.0
 
 * IMPORT 1.0 changed to merge Seq Protocol and Data Type
+* Compitable with FastQs in CASAVA 1.8 format
 
 ## 1.4.2
 
