@@ -523,7 +523,7 @@ class Body(object):
                     continue
                 extra = ''
                 (base, ext) = os.path.splitext(item)
-                if ext == '.gz':
+                if ext == '.gz' or ext == '.bz2':
                     extra = ext
                     (base, ext) = os.path.splitext(base)
                 full_ext = ext + extra

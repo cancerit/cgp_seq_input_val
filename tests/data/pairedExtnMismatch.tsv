@@ -3,8 +3,7 @@ Form type:	IMPORT
 Form version:	1.0
 Your Ref:	Wibble
 Species - Build:	HUMAN - GRCh37d5
-Seq Protocol:	WGS
-Data Type:	DNA
+Data Type:	DNA:WGS
 Mark Duplicates:	Y
 Group_ID	Sample	Normal_Tissue	Group_Control	Library	File	File_2
 1	Bob	N	N	1	banana_1.fq.gz	banana_1.fq

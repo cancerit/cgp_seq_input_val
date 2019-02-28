@@ -8,13 +8,11 @@
       "Form version:",
       "Your Ref:",
       "Species - Build:",
-      "Seq Protocol:",
       "Data Type:",
       "Mark Duplicates:"],
     "required": [
       "Your Ref:",
       "Species - Build:",
-      "Seq Protocol:",
       "Data Type:",
       "Mark Duplicates:"]
   },
