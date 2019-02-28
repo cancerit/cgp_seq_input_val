@@ -5,15 +5,20 @@
     "required": [
       "Your Ref:",
       "Species - Build:",
-      "Seq Protocol:",
       "Data Type:",
       "Mark Duplicates:"],
     "validate": {
       "Species - Build:": [
         "HUMAN - GRCh37d5",
         "MOUSE - GRCm38"],
-      "Seq Protocol:": ["WGS","WXS","TGS"],
-      "Data Type:": ["DNA","RNA"],
+      "Data Type:": [
+        "DNA:WGS",
+        "DNA:WXS",
+        "DNA:TGS",
+        "RNA:First strand",
+        "RNA:Second strand",
+        "RNA:Other"
+      ],
       "Mark Duplicates:": ["Y","N"]
     }
   },
