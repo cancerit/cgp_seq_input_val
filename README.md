@@ -46,6 +46,7 @@ of:
 
 ```json
 {
+    "format": "Casava_1.8",
     "interleaved": false,
     "pairs": 722079,
     "possible_encoding": [
