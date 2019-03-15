@@ -124,7 +124,7 @@ class Manifest(object):
         csv = import_module('csv')
         with open(self.infile, 'r') as csvfh:
             for row in csv.reader(csvfh, delimiter=','):
-                joined = "\t".join(row)
+                joined = "\t".join([ele.strip() for ele in row])
                 if not joined.startswith('\t'):
                     print(joined, file=ofh)
 
@@ -145,7 +145,7 @@ class Manifest(object):
             if cols == 0 or sheet.cell_value(r, 0) == '':
                 continue
             for c in range(0, cols):
-                simplerow.append(str(sheet.cell_value(r, c)))
+                simplerow.append(str(sheet.cell_value(r, c)).strip())
             print("\t".join(simplerow), file=ofh)
 
     def convert_by_extn(self, outfile):
@@ -225,6 +225,8 @@ class Header(object):
         header_items = {}
         with open(self.manifest, 'r') as ifh:
             for row in csv.reader(ifh, delimiter='\t'):
+                # clean any white space around each cell
+                row = [ele.strip() for ele in row]
                 if row[0] == constants.HEADER_BODY_SWITCH:
                     break
                 val = ''
@@ -391,6 +393,8 @@ class Body(object):
         loadRows = False
         with open(self.manifest, 'r') as ifh:
             for row in csv.reader(ifh, delimiter='\t'):
+                # clean any white space around each cell
+                row = [ele.strip() for ele in row]
                 if row[0] == constants.HEADER_BODY_SWITCH:
                     loadRows = True
                     self.headings = row
