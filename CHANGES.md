@@ -1,5 +1,9 @@
 # CHANGES
 
+## 1.5.1
+
+* White spaces around any cell in a manifest is removed before converting and validating it.
+
 ## 1.5.0
 
 * IMPORT 1.0 changed to merge Seq Protocol and Data Type
