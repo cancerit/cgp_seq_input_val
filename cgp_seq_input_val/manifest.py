@@ -562,7 +562,8 @@ class Body(object):
                 if not CWL_EN_STRICT_RE.match(item):
                     raise ValidationError(
                         "File has CWL imcompatible character(s) in the name: '%s' on line %d."
-                        % (item, cnt))
+                        % (item, cnt) + f"Acceptable pattern is: '{CWL_EN_STRICT_RE.pattern}'."
+                    )
 
     def heading_check(self, config):
         """
