@@ -22,7 +22,8 @@ VAL_LIM_ERROR = "Only %d sample(s) with a value of '%s' is allowed in column \
 VAL_LIM_CONFIG_ERROR = "'limit' and 'limit_by' must both be defined when either \
                        is present, check body.validate."
 
-# same as implemented in CWLtool. Reference: https://github.com/common-workflow-language/cwltool/blob/8f896370b043dc9c6802521550210ce1bad1cfd8/cwltool/command_line_tool.py#L58
+# same as implemented in CWLtool. Reference: https://tinyurl.com/y3gxryu4
+# the reference linked to the line in CWLtool repo
 CWL_EN_STRICT_RE = re.compile(r"^[a-zA-Z0-9._+-]+$")
 
 
@@ -560,8 +561,8 @@ class Body(object):
                 item = fd.attributes[f_type]
                 if not CWL_EN_STRICT_RE.match(item):
                     raise ValidationError(
-                        "Metadata item '%s' has CWL imcompatible character(s) in the name '%s' on line %d"
-                        % (f_type, item, cnt))
+                        "File has CWL imcompatible character(s) in the name: '%s' on line %d."
+                        % (item, cnt))
 
     def heading_check(self, config):
         """
