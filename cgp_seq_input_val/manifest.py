@@ -22,6 +22,9 @@ VAL_LIM_ERROR = "Only %d sample(s) with a value of '%s' is allowed in column \
 VAL_LIM_CONFIG_ERROR = "'limit' and 'limit_by' must both be defined when either \
                        is present, check body.validate."
 
+# same as implemented in CWLtool. Reference: https://github.com/common-workflow-language/cwltool/blob/8f896370b043dc9c6802521550210ce1bad1cfd8/cwltool/command_line_tool.py#L58
+CWL_EN_STRICT_RE = re.compile(r"^[a-zA-Z0-9._+-]+$")
+
 
 def wrapped_validate(args):
     """
@@ -435,7 +438,7 @@ class Body(object):
         self.field_values_valid(rules['validate'])
         self.uniq_files()
         self.file_ext_check(rules['validate_ext'])
-        self.file_name_hash_check(rules['reject_filename_with_hash'])
+        self.filename_cwl_compatibility_check(rules['reject_cwl_incompatible_filename'])
 
     def field_values_valid(self, validate):
         """
@@ -547,7 +550,7 @@ class Body(object):
                     )
                 last_ext = full_ext
 
-    def file_name_hash_check(self, rules: bool):
+    def filename_cwl_compatibility_check(self, rules: bool):
         if not rules:
             return
         cnt = self.offset
@@ -555,9 +558,9 @@ class Body(object):
             cnt += 1
             for f_type in ('File', 'File_2'):
                 item = fd.attributes[f_type]
-                if item.find('#') != -1:
+                if not CWL_EN_STRICT_RE.match(item):
                     raise ValidationError(
-                        "Metadata item '%s' has an invalid character: '#' in the name '%s' on line %d"
+                        "Metadata item '%s' has CWL imcompatible character(s) in the name '%s' on line %d"
                         % (f_type, item, cnt))
 
     def heading_check(self, config):
