@@ -4,7 +4,7 @@
 
 * Reject files in a manifest with characters that not compatible with CWL file name restrictions in their names.
   * This is can be disabled by setting `reject_cwl_incompatible_filename` to false in config file.
-  * CWLtool uses [this pattern](https://github.com/common-workflow-language/cwltool/blob/8f896370b043dc9c6802521550210ce1bad1cfd8/cwltool/command_line_tool.py#L58) to validate file names.
+  * CWLtool uses [this pattern][cwl-filename-restriction] to validate file names.
 
 ## 1.5.1
 
@@ -58,3 +58,7 @@
 ## 1.0.0
 
 Early functional release
+
+<!-- References -->
+
+[cwl-filename-restriction]: https://github.com/common-workflow-language/cwltool/blob/8f896370b043dc9c6802521550210ce1bad1cfd8/cwltool/command_line_tool.py#L58
