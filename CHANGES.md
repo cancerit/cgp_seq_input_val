@@ -1,5 +1,9 @@
 # CHANGES
 
+## 1.5.2
+
+* Reject files in a manifest with `#` in their names, this is a temporary measure due to [a bug in CWL](https://github.com/common-workflow-language/cwltool/issues/1083).
+
 ## 1.5.1
 
 * White spaces around any cell in a manifest is removed before converting and validating it.

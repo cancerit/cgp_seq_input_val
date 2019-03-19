@@ -43,6 +43,7 @@
     "validate_ext": {
       "File": [".fastq.gz", ".fq.gz", ".bam", ".cram", ".fastq.bz2", ".fq.bz2"],
       "File_2": [".fastq.gz", ".fq.gz", ".fastq.bz2", ".fq.bz2"]
-    }
+    },
+    "reject_filename_with_hash": true
   }
 }

@@ -435,6 +435,7 @@ class Body(object):
         self.field_values_valid(rules['validate'])
         self.uniq_files()
         self.file_ext_check(rules['validate_ext'])
+        self.file_name_hash_check(rules['reject_filename_with_hash'])
 
     def field_values_valid(self, validate):
         """
@@ -545,6 +546,19 @@ class Body(object):
                         f"'{last_ext}' vs '{full_ext}' on line {cnt} of manifest."
                     )
                 last_ext = full_ext
+
+    def file_name_hash_check(self, rules: bool):
+        if not rules:
+            return
+        cnt = self.offset
+        for fd in self.file_detail:
+            cnt += 1
+            for f_type in ('File', 'File_2'):
+                item = fd.attributes[f_type]
+                if item.find('#') != -1:
+                    raise ValidationError(
+                        "Metadata item '%s' has an invalid character: '#' in the name '%s' on line %d"
+                        % (f_type, item, cnt))
 
     def heading_check(self, config):
         """
