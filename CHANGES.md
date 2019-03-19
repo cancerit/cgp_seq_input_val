@@ -2,7 +2,9 @@
 
 ## 1.5.2
 
-* Reject files in a manifest with `#` in their names, this is a temporary measure due to [a bug in CWL](https://github.com/common-workflow-language/cwltool/issues/1083).
+* Reject files in a manifest with characters that not compatible with CWL file name restrictions in their names.
+  * This is can be disabled by setting `reject_cwl_incompatible_filename` to false in config file.
+  * CWLtool uses [this pattern](https://github.com/common-workflow-language/cwltool/blob/8f896370b043dc9c6802521550210ce1bad1cfd8/cwltool/command_line_tool.py#L58) to validate file names.
 
 ## 1.5.1
 
