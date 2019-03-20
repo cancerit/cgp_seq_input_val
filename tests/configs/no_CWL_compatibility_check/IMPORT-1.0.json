@@ -1,0 +1,50 @@
+{
+    "type": "IMPORT",
+    "version": "1.0",
+    "header": {
+      "expected": [
+        "Our Ref:",
+        "Form type:",
+        "Form version:",
+        "Your Ref:",
+        "Species - Build:",
+        "Data Type:",
+        "Mark Duplicates:"],
+      "required": [
+        "Your Ref:",
+        "Species - Build:",
+        "Data Type:",
+        "Mark Duplicates:"],
+      "validate": {
+        "Species - Build:": [
+          "HUMAN - GRCh37d5",
+          "MOUSE - GRCm38"
+        ],
+        "Data Type:": [
+          "DNA:WGS",
+          "DNA:WXS",
+          "DNA:TGS",
+          "RNA:First strand",
+          "RNA:Second strand",
+          "RNA:Other"
+        ],
+        "Mark Duplicates:": ["Y","N"]
+      }
+    },
+    "body": {
+      "ordered": ["Group_ID", "Sample", "Normal_Tissue", "Group_Control", "Library", "File", "File_2"],
+      "required": ["Group_ID", "Sample", "Normal_Tissue", "Group_Control", "File"],
+      "validate": {
+        "Normal_Tissue": [{"value": "Y"},
+                          {"value": "N"}],
+        "Group_Control": [{"value": "Y", "limit": 1, "limit_by": "Group_ID"},
+                          {"value": "N"}]
+      },
+      "validate_ext": {
+        "File": [".fastq.gz", ".fq.gz", ".bam", ".cram", ".fastq.bz2", ".fq.bz2"],
+        "File_2": [".fastq.gz", ".fq.gz", ".fastq.bz2", ".fq.bz2"]
+      },
+      "reject_cwl_incompatible_filename": false
+    }
+  }
+  
