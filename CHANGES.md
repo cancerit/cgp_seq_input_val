@@ -1,5 +1,9 @@
 # CHANGES
 
+## 1.5.3
+
+* `+` is not allowed in file names anymore, as CWL could not "glob" an output with a `+` in its name
+
 ## 1.5.2
 
 * Reject files in a manifest with characters that not compatible with CWL file name restrictions in their names.
