@@ -64,6 +64,12 @@ def test_manifest_uuid_novalidate():
             manifest = Manifest(os.path.join(test_data, 'file_set_good', 'files_good.tsv'))
             assert manifest.get_uuid()
 
+def test_manifest_cwl_imcompatible_filename():
+    with pytest.raises(ValidationError) as e_info:
+        with tempfile.TemporaryDirectory() as tmpd:
+            manifest = Manifest(os.path.join(test_data, 'file_name_incompatible_with_cwl.tsv'))
+            manifest.validate()
+
 ### Config parsing tests
 
 def test_manifest_get_config_bad_type():
@@ -219,6 +225,13 @@ def test_manifest_limit_exceeded():
         cfg = header.get_config(os.path.join(configs, 'limit_to_exceed', 'IMPORT-1.0.json'))
         body = Body(infile, cfg['body'])
         body.validate(cfg['body'])
+
+def test_disable_CWL_compatibility_check():
+    infile = os.path.join(test_data, 'file_name_incompatible_with_cwl.tsv')
+    header = Header(infile)
+    cfg = header.get_config(os.path.join(configs, 'no_CWL_compatibility_check', 'IMPORT-1.0.json'))
+    body = Body(infile, cfg['body'])
+    body.validate(cfg['body'])
 
 def test_manifest_file_set_good():
     infile = os.path.join(test_data, 'file_set_good',

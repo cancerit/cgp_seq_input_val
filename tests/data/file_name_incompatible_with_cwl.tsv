@@ -1,0 +1,11 @@
+Our Ref:
+Form type:	IMPORT
+Form version:	1.0
+Your Ref:	test_fail_qc_3
+Species - Build:	HUMAN - GRCh37d5
+Data Type:	DNA:WGS
+Mark Duplicates:	Y
+Group_ID	Sample	Normal_Tissue	Group_Control	Library	File	File_2
+1.0	blood_corrupted	Y	Y	1.0	colo-829-bl 12_i.fq.gz
+1.0	tumour_1	N	N	2.0	colo-829-bl?12_smaller.fq.gz
+1.0	tumour_2	N	N	3.0	colo-829_1!111.fq.gz	colo-829_2%111.fq.gz
