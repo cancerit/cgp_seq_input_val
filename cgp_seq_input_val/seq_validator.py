@@ -51,7 +51,7 @@ from cgp_seq_input_val.fastq_read import FastqRead, FastqFormat, CasavaFastqRead
 Q_RANGES = {'Sanger': [33, 73],
             'Solexa': [59, 104],
             'Illumina 1.3': [64, 104],
-            'Illumina 1.5': [67, 105],
+            'Illumina 1.5': [66, 105],  # 2=Read Segment Quality Control Indicator
             'Illumina 1.8': [33, 74]}
 
 PROG_RECORDS = 100000
