@@ -151,6 +151,8 @@ class Manifest(object):
         self.body = None
 
     def _xlsx_to_tsv(self, ofh):
+        print('Support for xlsx was dropped by xlrd, openpyxl needs implementing', file=sys.stderr)
+        sys.exit(1)
         self._excel_to_tsv(ofh)
 
     def _xls_to_tsv(self, ofh):

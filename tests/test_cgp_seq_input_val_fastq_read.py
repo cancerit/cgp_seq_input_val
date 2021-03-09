@@ -49,7 +49,9 @@ def test_fastq_seq_shorter_than_qual(file_name_format):
 @pytest.mark.parametrize('file_format',
     [
         ('good_read_1.fq', FastqFormat.ILLUMINA),
-        ('casava_1_8_reads.fq', FastqFormat.CASAVA)
+        ('casava_1_8_reads.fq', FastqFormat.CASAVA),
+        ('casava_dual_1.fq', FastqFormat.CASAVA),
+        ('casava_dual_2.fq', FastqFormat.CASAVA)
     ])
 def test_fastq_seq_determine_format(file_format):
     file_name, format = file_format

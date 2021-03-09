@@ -38,7 +38,7 @@ from enum import Enum
 from cgp_seq_input_val.error_classes import SeqValidationError
 
 ILLUMINA_FASTQ_HEADER_PATTERN = re.compile(r'^@(\S+)/([12])$')
-CASAVA_FASTQ_HEADER_PATTERN = re.compile(r'^@(\S+)\s([12])(:\w+:\w+:\w+)$')
+CASAVA_FASTQ_HEADER_PATTERN = re.compile(r'^@(\S+)\s([12])(:[YN]+:[\d+]+:\S+)$')
 
 
 class FastqFormat(Enum):
