@@ -22,10 +22,10 @@ def test_normalise_xls():
         normalise(setup_args(data_dir, 'xls', tmpd))
     pass
 
-def test_normalise_xlsx():
-    with tempfile.TemporaryDirectory() as tmpd:
-        normalise(setup_args(data_dir, 'xlsx', tmpd))
-    pass
+# def test_normalise_xlsx():
+#     with tempfile.TemporaryDirectory() as tmpd:
+#         normalise(setup_args(data_dir, 'xlsx', tmpd))
+#     pass
 
 def test_normalise_csv():
     with tempfile.TemporaryDirectory() as tmpd:
@@ -50,7 +50,7 @@ def test_normalise_same_in_out_tsv():
     pass
 
 def test_normalise_no_output():
-    infile = os.path.join(data_dir, 'SimplifiedManifest_v1.0.xlsx')
+    infile = os.path.join(data_dir, 'SimplifiedManifest_v1.0.xls')
     with tempfile.TemporaryDirectory() as tmpd:
         shutil.copy(infile, tmpd)
         infile = os.path.join(tmpd, os.path.basename(infile))
